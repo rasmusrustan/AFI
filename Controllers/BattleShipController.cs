@@ -67,7 +67,7 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle/SeaBattle.cshtml", battleField);
             }
 
-            ViewBag.Message = "Dubbelskepp placerat!";
+            ViewBag.Message = "Bireme placerat!";
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
 

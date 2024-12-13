@@ -7,15 +7,15 @@ namespace BattleShits.Models
     {
         public int[,] PlayerBoard { get; set; } // Spelbräde (0 = tomt, 1 = skepp, 2 = träff, 3 = miss)
         public int[,] RobotBoard { get; set; }
-        public List<(string name, int x, int y)> PlayerShips {get; set; }
-        public List<(string name, int x, int y)> RobotShips { get; set; }
+        public List<(string name, int y, int x)> PlayerShips {get; set; }
+        public List<(string name, int y, int x)> RobotShips { get; set; }
 
         public BattleField()
         {
             PlayerBoard = new int[3, 3];
             RobotBoard = new int[3, 3];
-            PlayerShips = new List<(string name,int x, int y)>();
-            RobotShips = new List<(string name, int x, int y)>();
+            PlayerShips = new List<(string name,int y, int x)>();
+            RobotShips = new List<(string name, int y, int x)>();
             RandomShips();
         }
 
@@ -23,7 +23,7 @@ namespace BattleShits.Models
         public void PlaceSingleShip(int x, int y)
         {
             PlayerShips.Add(("Single", x, y));
-            PlayerBoard[x, y] = 1; 
+            PlayerBoard[y, x] = 1; 
         }
         public void PlaceDoubleShip(int x, int y)
         {
@@ -72,12 +72,12 @@ namespace BattleShits.Models
             {
                 int x = random.Next(0, 3);
                 int y = random.Next(0, 3);
-                var newCoord = ("Double", x, y);
+                var newCoord = ("Double", y, x);
 
                 if (!RobotShips.Contains(newCoord)) 
                 {
                     RobotShips.Add(newCoord);
-                    RobotBoard[x, y] = 1; 
+                    RobotBoard[y, x] = 1; 
                 }
             }
         }
@@ -85,10 +85,10 @@ namespace BattleShits.Models
         // Spelare skjuter skott på en koordinat
         public bool Shoot(int x, int y)
         {
-            if (RobotBoard[x, y] == 1) // Träff på skepp
+            if (RobotBoard[y, x] == 1) // Träff på skepp
             {
-                RobotBoard[x, y] = 2; // Markera träff
-                Console.WriteLine($"Träff på skepp vid koordinat ({x}, {y})!");
+                RobotBoard[y, x] = 2; // Markera träff
+                Console.WriteLine($"Träff på skepp vid koordinat ({y}, {x})!");
 
                 // Kontrollera om hela skeppet är sänkt
                 var shipCoordinates = RobotShips.Where(s => s.x == x && s.y == y).ToList();
@@ -100,7 +100,7 @@ namespace BattleShits.Models
                     foreach (var coord in RobotShips.Where(s => s.name == "Double"))
                     {
                         
-                        if (RobotBoard[coord.x, coord.y] != 2) // Om någon del av skeppet inte är träffad
+                        if (RobotBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
                         {
                             Console.WriteLine("You hit part of a bireme");
                             isSunk = false;
@@ -117,10 +117,10 @@ namespace BattleShits.Models
 
                 return true;
             }
-            else if (RobotBoard[x, y] == 0) // Miss
+            else if (RobotBoard[y, x] == 0) // Miss
             {
-                RobotBoard[x, y] = 3; // Markera miss
-                Console.WriteLine($"Miss vid koordinat ({x}, {y})");
+                RobotBoard[y, x] = 3; // Markera miss
+                Console.WriteLine($"Miss vid koordinat ({y}, {x})");
                 return false;
             }
             return false;
@@ -134,23 +134,22 @@ namespace BattleShits.Models
             int x = random.Next(0, 3);
             int y = random.Next(0, 3);
 
-            if (PlayerBoard[x, y] == 1) // Träff på skepp
+            if (PlayerBoard[y, x] == 1) // Träff på skepp
             {
-                PlayerBoard[x, y] = 2; // Markera träff
-                Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({x}, {y})!");
+                PlayerBoard[y, x] = 2; // Markera träff
+                Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({y}, {x})!");
 
                 // Kontrollera om hela skeppet är sänkt
-                var shipCoordinates = PlayerShips.Where(s => s.x == x && s.y == y).ToList();
+                var shipCoordinates = PlayerShips.Where(s => s.x == y && s.x == y).ToList();
                 foreach (var ship in shipCoordinates)
                 {
                     bool isSunk = true;
-                    Console.WriteLine("Hitit");
 
                     // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
                     foreach (var coord in PlayerShips.Where(s => s.name == ship.name))
                     {
                    
-                        if (PlayerBoard[coord.x, coord.y] != 2) // Om någon del av skeppet inte är träffad
+                        if (PlayerBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
                         {
                             Console.WriteLine("Robot hit a part of a bireme");
                             isSunk = false;
@@ -166,10 +165,10 @@ namespace BattleShits.Models
 
                 return true;
             }
-            else if (PlayerBoard[x, y] == 0) // Miss
+            else if (PlayerBoard[y, x] == 0) // Miss
             {
-                PlayerBoard[x, y] = 3; // Markera miss
-                Console.WriteLine($"Robot missade vid koordinat ({x}, {y})");
+                PlayerBoard[y, x] = 3; // Markera miss
+                Console.WriteLine($"Robot missade vid koordinat ({y}, {x})");
                 return false;
             }
             return false;
@@ -177,17 +176,17 @@ namespace BattleShits.Models
 
         public bool AreAllPlayerShipsSunk()
         {
-            foreach (var (name, x, y) in PlayerShips)
+            foreach (var (name, y, x) in PlayerShips)
             {
-                if (PlayerBoard[x, y] != 2) return false;
+                if (PlayerBoard[y, x] != 2) return false;
             }
             return true;
         }
         public bool AreAllRobotShipsSunk()
         {
-            foreach (var (name, x, y) in RobotShips)
+            foreach (var (name, y, x) in RobotShips)
             {
-                if (RobotBoard[x, y] != 2) return false;
+                if (RobotBoard[y, x] != 2) return false;
             }
             return true;
         }
