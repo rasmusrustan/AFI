@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.AccessControl;
 using System.Security.Cryptography;
 
 namespace BattleShits.Models
@@ -9,11 +10,12 @@ namespace BattleShits.Models
         public int[,] RobotBoard { get; set; }
         public List<(string name, int y, int x)> PlayerShips {get; set; }
         public List<(string name, int y, int x)> RobotShips { get; set; }
+        public int id = 0;
 
         public BattleField()
         {
-            PlayerBoard = new int[3, 3];
-            RobotBoard = new int[3, 3];
+            PlayerBoard = new int[10, 10];
+            RobotBoard = new int[10, 10];
             PlayerShips = new List<(string name,int y, int x)>();
             RobotShips = new List<(string name, int y, int x)>();
             RandomShips();
@@ -25,45 +27,138 @@ namespace BattleShits.Models
             PlayerShips.Add(("Single", x, y));
             PlayerBoard[y, x] = 1; 
         }
-        public void PlaceDoubleShip(int x, int y)
+        public void PlaceBireme(string orientation, int x, int y)
         {
-            // Använd unika namn för varje variabel
-            Console.WriteLine("Ange orientering (lodrätt eller vågrätt): ");
-            string orientation = Console.ReadLine()?.ToLower(); // Läs orienteringen och omvandla till små bokstäver
-
-            Console.WriteLine("Ange startposition (x y): ");
-            string[] input = Console.ReadLine()?.Split(' '); // Läs in koordinaterna
-
-            if (input == null || input.Length != 2 ||
-                !int.TryParse(input[0], out int startX) || // Ändra namn på x till startX
-                !int.TryParse(input[1], out int startY))   // Ändra namn på y till startY
-            {
-                Console.WriteLine("Ogiltig input. Försök igen.");
-                return;
-            }
-
+  
             // Validera orienteringen och positionen
-            if (orientation == "lodrätt" && startX >= 0 && startX < 3 && startY >= 0 && startY < 2)
+            if (orientation == "hor")
             {
-                RobotBoard[startX, startY] = 1;
-                RobotBoard[startX, startY + 1] = 1; // Lodrätt lägger till i nästa rad
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y, x + 1] = 1;
 
-                RobotShips.Add(("Double", startX, startY));
-                RobotShips.Add(("Double", startX, startY + 1));
+                PlayerShips.Add(("Bireme"+id, y, x));
+                PlayerShips.Add(("Bireme"+id, y, x + 1));
+                id++;
             }
-            else if (orientation == "vågrätt" && startX >= 0 && startX < 2 && startY >= 0 && startY < 3)
+            else if (orientation == "vert")
             {
-                RobotBoard[startX, startY] = 1;
-                RobotBoard[startX + 1, startY] = 1; // Vågrätt lägger till i nästa kolumn
-                RobotShips.Add(("Double", startX, startY));
-                RobotShips.Add(("Double", startX + 1, startY));
+                PlayerBoard[y,x] = 1;
+                PlayerBoard[y+1,x] = 1; 
+
+                PlayerShips.Add(("Bireme"+id, y, x));
+                PlayerShips.Add(("Bireme"+id, y + 1, x));
+                id++;
             }
             else
             {
                 Console.WriteLine("Ogiltig orientering eller startposition. Skeppet ryms inte på brädet.");
             }
         }
+        public void PlaceTrireme(string orientation, int x, int y)
+        {
 
+            // Validera orienteringen och positionen
+            if (orientation == "hor")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y, x + 1] = 1;
+                PlayerBoard[y, x + 2] = 1;
+
+                PlayerShips.Add(("Trireme" + id, y, x));
+                PlayerShips.Add(("Trireme" + id, y, x + 1));
+                PlayerShips.Add(("Trireme" + id, y, x + 2));
+                id++;
+            }
+            else if (orientation == "vert")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y + 1, x] = 1;
+                PlayerBoard[y + 2, x] = 1;
+
+                PlayerShips.Add(("Trireme" + id, y, x));
+                PlayerShips.Add(("Trireme" + id, y + 1, x));
+                PlayerShips.Add(("Trireme" + id, y + 2, x));
+                id++;
+            }
+            else
+            {
+                Console.WriteLine("Ogiltig orientering eller startposition. Skeppet ryms inte på brädet.");
+            }
+        }
+        public void PlaceLongShip(string orientation, int x, int y)
+        {
+
+            // Validera orienteringen och positionen
+            if (orientation == "hor")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y, x + 1] = 1;
+                PlayerBoard[y, x + 2] = 1;
+                PlayerBoard[y, x + 3] = 1;
+
+                PlayerShips.Add(("Longship" + id, y, x));
+                PlayerShips.Add(("Longship" + id, y, x + 1));
+                PlayerShips.Add(("Longship" + id, y, x + 2));
+                PlayerShips.Add(("Longship" + id, y, x + 3));
+                id++;
+            }
+            else if (orientation == "vert")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y + 1, x] = 1;
+                PlayerBoard[y + 2, x] = 1;
+                PlayerBoard[y + 3, x] = 1;
+
+                PlayerShips.Add(("Longship" + id, y, x));
+                PlayerShips.Add(("Longship" + id, y + 1, x));
+                PlayerShips.Add(("Longship" + id, y + 2, x));
+                PlayerShips.Add(("Longship" + id, y + 3, x));
+                id++;
+            }
+            else
+            {
+                Console.WriteLine("Ogiltig orientering eller startposition. Skeppet ryms inte på brädet.");
+            }
+        }
+        public void PlaceTitanic(string orientation, int x, int y)
+        {
+
+            // Validera orienteringen och positionen
+            if (orientation == "hor")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y, x + 1] = 1;
+                PlayerBoard[y, x + 2] = 1;
+                PlayerBoard[y, x + 3] = 1;
+                PlayerBoard[y, x + 4] = 1;
+
+                PlayerShips.Add(("Titanic" + id, y, x));
+                PlayerShips.Add(("Titanic" + id, y, x + 1));
+                PlayerShips.Add(("Titanic" + id, y, x + 2));
+                PlayerShips.Add(("Titanic" + id, y, x + 3));
+                PlayerShips.Add(("Titanic" + id, y, x + 4));
+                id++;
+            }
+            else if (orientation == "vert")
+            {
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y + 1, x] = 1;
+                PlayerBoard[y + 2, x] = 1;
+                PlayerBoard[y + 3, x] = 1;
+                PlayerBoard[y + 4, x] = 1;
+
+                PlayerShips.Add(("Titanic" + id, y, x));
+                PlayerShips.Add(("Titanic" + id, y + 1, x));
+                PlayerShips.Add(("Titanic" + id, y + 2, x));
+                PlayerShips.Add(("Titanic" + id, y + 3, x));
+                PlayerShips.Add(("Titanic" + id, y + 4, x));
+                id++;
+            }
+            else
+            {
+                Console.WriteLine("Ogiltig orientering eller startposition. Skeppet ryms inte på brädet.");
+            }
+        }
 
         public void RandomShips()
         {
@@ -91,13 +186,13 @@ namespace BattleShits.Models
                 Console.WriteLine($"Träff på skepp vid koordinat ({y}, {x})!");
 
                 // Kontrollera om hela skeppet är sänkt
-                var shipCoordinates = RobotShips.Where(s => s.x == x && s.y == y).ToList();
+                var shipCoordinates = RobotShips.Where(s => s.y == y && s.x == x).ToList();
                 foreach (var ship in shipCoordinates)
                 {
                     bool isSunk = true;
 
                     // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
-                    foreach (var coord in RobotShips.Where(s => s.name == "Double"))
+                    foreach (var coord in RobotShips.Where(s => s.name == "name"))
                     {
                         
                         if (RobotBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
@@ -140,26 +235,27 @@ namespace BattleShits.Models
                 Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({y}, {x})!");
 
                 // Kontrollera om hela skeppet är sänkt
-                var shipCoordinates = PlayerShips.Where(s => s.x == y && s.x == y).ToList();
+                var shipCoordinates = PlayerShips.Where(s => s.y == y && s.x == x).ToList();
                 foreach (var ship in shipCoordinates)
                 {
                     bool isSunk = true;
 
                     // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
-                    foreach (var coord in PlayerShips.Where(s => s.name == ship.name))
+                    foreach (var coord in PlayerShips.Where(s => s.name == "name"))
                     {
-                   
+
                         if (PlayerBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
                         {
-                            Console.WriteLine("Robot hit a part of a bireme");
+                            Console.WriteLine("Robot hit part of a bireme");
                             isSunk = false;
                             break;
+
                         }
                     }
 
                     if (isSunk)
                     {
-                        Console.WriteLine($"Robot sunk the entire bireme!");
+                        Console.WriteLine("Robot sunk a bireme!");
                     }
                 }
 
@@ -190,6 +286,8 @@ namespace BattleShits.Models
             }
             return true;
         }
+
+
     }
 
 }

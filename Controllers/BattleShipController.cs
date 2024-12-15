@@ -28,18 +28,16 @@ namespace BattleShits.Controllers
         [HttpPost]
         public IActionResult PlaceDoubleShip(string orientation, int x, int y)
         {
+            int length = 2;
             if (battleField.PlayerBoard == null)
                 return View("Error"); // Kontrollera att brädet existerar
 
             // Validera att skeppet kan placeras utan att gå utanför brädet
-            if (orientation == "horizontal")
+            if (orientation == "hor")
             {
-                if (x >= 0 && x < battleField.PlayerBoard.GetLength(0) - 1 && y >= 0 && y < battleField.PlayerBoard.GetLength(1))
+                if (x >= 0 && x + length - 1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlayerBoard[x, y] = 1;
-                    battleField.PlayerBoard[x + 1, y] = 1;
-                    battleField.PlaceDoubleShip(x, y);
-                    
+                    battleField.PlaceBireme(orientation, x, y);
                 }
                 else
                 {
@@ -47,13 +45,11 @@ namespace BattleShits.Controllers
                     return View("~/Views/Battle/SeaBattle.cshtml", battleField);
                 }
             }
-            else if (orientation == "vertical")
+            else if (orientation == "vert")
             {
-                if (x >= 0 && x < battleField.PlayerBoard.GetLength(0) && y >= 0 && y < battleField.PlayerBoard.GetLength(1) - 1)
+                if (y >= 0 && y + length - 1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlayerBoard[x, y] = 1;
-                    battleField.PlayerBoard[x, y + 1] = 1;
-                    battleField.PlaceDoubleShip(x, y);
+                   battleField.PlaceBireme(orientation, x, y);
                 }
                 else
                 {
@@ -70,9 +66,126 @@ namespace BattleShits.Controllers
             ViewBag.Message = "Bireme placerat!";
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
+        public IActionResult PlaceTrippleShip(string orientation, int x, int y)
+        {
+            int length = 3;
+            if (battleField.PlayerBoard == null)
+                return View("Error"); // Kontrollera att brädet existerar
 
+            // Validera att skeppet kan placeras utan att gå utanför brädet
+            if (orientation == "hor")
+            {
+                if (x >= 0 && x + length - 1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
+                {
+                    battleField.PlaceTrireme(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else if (orientation == "vert")
+            {
+                if (y >= 0 && y + length - 1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
+                {
+                    battleField.PlaceTrireme(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Ogiltig orientering.";
+                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            }
 
-        // Skjut på ett mål
+            ViewBag.Message = "Trireme placerat!";
+            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+        }
+        public IActionResult PlaceLongShip(string orientation, int x, int y)
+        {
+            int length = 4;
+            if (battleField.PlayerBoard == null)
+                return View("Error"); // Kontrollera att brädet existerar 
+
+            // Validera att skeppet kan placeras utan att gå utanför brädet
+            if (orientation == "hor")
+            {
+                if (x >= 0 && x + length-1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x,y, length))
+                {
+                    battleField.PlaceLongShip(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else if (orientation == "vert")
+            {
+                if (y >= 0 && y + length-1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
+                {
+                    battleField.PlaceLongShip(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Ogiltig orientering.";
+                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            }
+
+            ViewBag.Message = "Longship placerat!";
+            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+        }
+        public IActionResult PlaceTitanic(string orientation, int x, int y)
+        {
+            int length = 5;
+            if (battleField.PlayerBoard == null)
+                return View("Error"); // Kontrollera att brädet existerar
+        
+            // Validera att skeppet kan placeras utan att gå utanför brädet
+            if (orientation == "hor")
+            {
+                if (x >= 0 && x + 4 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
+                {
+                    battleField.PlaceTitanic(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else if (orientation == "vert")
+            {
+                if (y >= 0 && y + 4 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
+                {
+                    battleField.PlaceTitanic(orientation, x, y);
+                }
+                else
+                {
+                    ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
+                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Ogiltig orientering.";
+                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            }
+
+            ViewBag.Message = "Titanic placerat!";
+            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+        }
         public IActionResult Fire(int x, int y)
 {
             // Användarens skott
@@ -96,6 +209,28 @@ namespace BattleShits.Controllers
             }
 
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+        }
+        public bool PosIsEmpty(string orientation, int x, int y, int length)
+        {
+            if (orientation == "hor")
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    if (battleField.PlayerBoard[y, x + i] != 0)
+                        ViewBag.Message("Platsen är upptagen!");
+                        return false;
+                }
+            }
+            else if (orientation == "vert")
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    if (battleField.PlayerBoard[y + i, x] != 0)
+                        ViewBag.Message("Platsen är upptagen!");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
