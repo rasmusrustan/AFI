@@ -1,5 +1,4 @@
 ﻿@model BattleShits.Models.BattleField
-    
 
 @{
     ViewData["Title"] = "AddShipP1";
@@ -9,61 +8,89 @@
 
 <p>@ViewBag.Message</p>
 
-<h2>Place the Titanic - 5slots</h2>
-<form method="post" asp-action="PlaceTitanic">
-    <label for="orientation">Orientering:</label>
-    <select id="orientation" name="orientation" required>
-        <option value="hor">Horizontel</option>
-        <option value="vert">Vertical</option>
-    </select>
-    <label for="x">Startkoordinat X:</label>
-    <input type="number" id="x" name="x" min="0" max="9" required />
-    <label for="y">Startkoordinat Y:</label>
-    <input type="number" id="y" name="y" min="0" max="9" required />
-    <button type="submit">Placera skepp</button>
-</form>
+<h2>Place the Titanic - 5 slots</h2>
+@if (Model.CanPlaceTitanic)
+{
+    <form method="post" asp-action="PlaceTitanic">
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Titanic</button>
+    </form>
+}
+else
+{
+    <p>Titanic är redan placerat!</p>
+}
 
-<h2>Place 2 Longship - 4slots each, </h2>
-<form method="post" asp-action="PlaceLongShip">
-    <label for="orientation">Orientering:</label>
-    <select id="orientation" name="orientation" required>
-        <option value="hor">Horizontel</option>
-        <option value="vert">Vertical</option>
-    </select>
-    <label for="x">Startkoordinat X:</label>
-    <input type="number" id="x" name="x" min="0" max="9" required />
-    <label for="y">Startkoordinat Y:</label>
-    <input type="number" id="y" name="y" min="0" max="9" required />
-    <button type="submit">Placera skepp</button>
-</form>
+<h2>Place 2 Longships - 4 slots each</h2>
+@if (Model.CanPlaceLongship)
+{
+    <form method="post" asp-action="PlaceLongShip">
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Longship</button>
+    </form>
+}
+else
+{
+    <p>Alla Longships är redan placerade!</p>
+}
 
-<h2>Place 3 Triremes - 3slots each</h2>
-<form method="post" asp-action="PlaceTrippleShip">
-    <label for="orientation">Orientering:</label>
-    <select id="orientation" name="orientation" required>
-        <option value="hor">Horizontel</option>
-        <option value="vert">Vertical</option>
-    </select>
-    <label for="x">Startkoordinat X:</label>
-    <input type="number" id="x" name="x" min="0" max="9" required />
-    <label for="y">Startkoordinat Y:</label>
-    <input type="number" id="y" name="y" min="0" max="9" required />
-    <button type="submit">Placera skepp</button>
-</form>
+<h2>Place 3 Triremes - 3 slots each</h2>
+@if (Model.CanPlaceTrireme)
+{
+    <form method="post" asp-action="PlaceTrippleShip">
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Trireme</button>
+    </form>
+}
+else
+{
+    <p>Alla Triremes är redan placerade!</p>
+}
 
-<h2>Place 4 Biremes - 2slots each</h2>
-<form method="post" asp-action="PlaceDoubleShip">
-    <label for="orientation">Orientering:</label>
-    <select id="orientation" name="orientation" required>
-        <option value="hor">Horizontel</option>
-        <option value="vert">Vertical</option>
-    </select>
-    <label for="x">Startkoordinat X:</label>
-    <input type="number" id="x" name="x" min="0" max="9" required />
-    <label for="y">Startkoordinat Y:</label>
-    <input type="number" id="y" name="y" min="0" max="9" required />
-    <button type="submit">Placera skepp</button>
-</form>
+<h2>Place 4 Biremes - 2 slots each</h2>
+@if (Model.CanPlaceBireme)
+{
+    <form method="post" asp-action="PlaceDoubleShip">
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Bireme</button>
+    </form>
+}
+else
+{
+    <p>Alla Biremes är redan placerade!</p>
+}
 
 <h3>Your ships</h3>
 <table>
