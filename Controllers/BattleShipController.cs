@@ -7,9 +7,15 @@ namespace BattleShits.Controllers
     public class BattleShipController : Controller
     {
         private static BattleField battleField = new BattleField();
-        public IActionResult SeaBattle()
+
+        public IActionResult AddShipP1()
         {
             battleField = new BattleField();
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+        }
+
+        public IActionResult SeaBattle()
+        {
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
         public IActionResult PlaceShip(int x, int y)
@@ -23,7 +29,7 @@ namespace BattleShits.Controllers
             {
                 ViewBag.Message = "Platsen är redan upptagen!";
             }
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         [HttpPost]
         public IActionResult PlaceDoubleShip(string orientation, int x, int y)
@@ -41,8 +47,8 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för vågrätt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else if (orientation == "vert")
@@ -53,18 +59,18 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för lodrätt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
             ViewBag.Message = "Bireme placerat!";
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         public IActionResult PlaceTrippleShip(string orientation, int x, int y)
         {
@@ -75,14 +81,14 @@ namespace BattleShits.Controllers
             // Validera att skeppet kan placeras utan att gå utanför brädet
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
+                if (x >= 0 && x + (length - 1) < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0)&& PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceTrireme(orientation, x, y);
+                        battleField.PlaceTrireme(orientation, x, y);
                 }
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else if (orientation == "vert")
@@ -94,17 +100,17 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
             ViewBag.Message = "Trireme placerat!";
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         public IActionResult PlaceLongShip(string orientation, int x, int y)
         {
@@ -122,7 +128,7 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else if (orientation == "vert")
@@ -134,17 +140,17 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
             ViewBag.Message = "Longship placerat!";
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         public IActionResult PlaceTitanic(string orientation, int x, int y)
         {
@@ -162,7 +168,7 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else if (orientation == "vert")
@@ -174,17 +180,17 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för Vertikalt skepp.";
-                    return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
             ViewBag.Message = "Titanic placerat!";
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         public IActionResult Fire(int x, int y)
 {
@@ -216,9 +222,11 @@ namespace BattleShits.Controllers
             {
                 for (int i = 0; i < length; i++)
                 {
-                    if (battleField.PlayerBoard[y, x + i] != 0)
+                    if (battleField.PlayerBoard[y, x + i] !=0 )
+                    {
                         ViewBag.Message("Platsen är upptagen!");
                         return false;
+                    }
                 }
             }
             else if (orientation == "vert")
@@ -226,8 +234,10 @@ namespace BattleShits.Controllers
                 for (int i = 0; i < length; i++)
                 {
                     if (battleField.PlayerBoard[y + i, x] != 0)
+                    {
                         ViewBag.Message("Platsen är upptagen!");
-                    return false;
+                        return false;
+                    }
                 }
             }
             return true;
