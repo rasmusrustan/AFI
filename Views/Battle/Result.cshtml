@@ -1,0 +1,23 @@
+﻿@model BattleShits.Models.BattleField
+
+@{
+    ViewData["Title"] = "Results!";
+}
+
+<h2>Battle Results</h2>
+<p>After a long and hard battle we have a winner...</p>
+<p>@Model.Winner, congratulations!</p>
+
+<h3>Player 1 Stats</h3>
+<ul>
+    <li>Total Shots: @Model.P1Shots</li>
+    <li>Total Hits: @Model.P1Hits</li>
+    <li>Hitate: @Model.P1Hits/@Model.P1Shots</li>
+</ul>
+
+<h3>Player 2 Stats</h3>
+<ul>
+    <li>Total Shots: @Model.P2Shots</li>
+    <li>Total Hits: @Model.P2Hits</li>
+    <li>Hitate: @Model.P2Hits/@Model.P2Shots</li>
+</ul>

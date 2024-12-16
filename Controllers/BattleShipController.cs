@@ -18,6 +18,10 @@ namespace BattleShits.Controllers
         {
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
+        public IActionResult Result()
+        {
+            return View("~/Views/Battle/Result.cshtml", battleField);
+        }
         public IActionResult PlaceShip(int x, int y)
         {
             if (battleField.PlayerBoard[x, y] == 0) // Kontrollera att rutan är tom
@@ -202,7 +206,7 @@ namespace BattleShits.Controllers
              if (battleField.AreAllRobotShipsSunk())
              {
                 ViewBag.Message += " Alla Robotens skepp är sänkta! Spelaren vinner!";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/Result.cshtml", battleField);
              }
 
             // Roboten skjuter
@@ -211,7 +215,7 @@ namespace BattleShits.Controllers
             if (battleField.AreAllPlayerShipsSunk())
             {
                 ViewBag.Message += " Alla spelarens skepp är sänkta! Roboten vinner!";
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle/Result.cshtml", battleField);
             }
 
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);

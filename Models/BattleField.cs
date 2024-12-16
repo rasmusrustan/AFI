@@ -8,15 +8,20 @@ namespace BattleShits.Models
     {
         public int[,] PlayerBoard { get; set; } // Spelbräde (0 = tomt, 1 = skepp, 2 = träff, 3 = miss)
         public int[,] RobotBoard { get; set; }
-        public List<(string name, int y, int x)> PlayerShips {get; set; }
+        public List<(string name, int y, int x)> PlayerShips { get; set; }
         public List<(string name, int y, int x)> RobotShips { get; set; }
         public int id = 0;
+        public int P1Hits = 0;
+        public int P2Hits = 0;
+        public int P1Shots = 0;
+        public int P2Shots = 0;
+        public string Winner= null;
 
         public BattleField()
         {
             PlayerBoard = new int[10, 10];
             RobotBoard = new int[10, 10];
-            PlayerShips = new List<(string name,int y, int x)>();
+            PlayerShips = new List<(string name, int y, int x)>();
             RobotShips = new List<(string name, int y, int x)>();
             RandomShips();
         }
@@ -25,28 +30,28 @@ namespace BattleShits.Models
         public void PlaceSingleShip(int x, int y)
         {
             PlayerShips.Add(("Single", x, y));
-            PlayerBoard[y, x] = 1; 
+            PlayerBoard[y, x] = 1;
         }
         public void PlaceBireme(string orientation, int x, int y)
         {
-  
+
             // Validera orienteringen och positionen
             if (orientation == "hor")
             {
                 PlayerBoard[y, x] = 1;
                 PlayerBoard[y, x + 1] = 1;
 
-                PlayerShips.Add(("Bireme"+id, y, x));
-                PlayerShips.Add(("Bireme"+id, y, x + 1));
+                PlayerShips.Add(("Bireme" + id, y, x));
+                PlayerShips.Add(("Bireme" + id, y, x + 1));
                 id++;
             }
             else if (orientation == "vert")
             {
-                PlayerBoard[y,x] = 1;
-                PlayerBoard[y+1,x] = 1; 
+                PlayerBoard[y, x] = 1;
+                PlayerBoard[y + 1, x] = 1;
 
-                PlayerShips.Add(("Bireme"+id, y, x));
-                PlayerShips.Add(("Bireme"+id, y + 1, x));
+                PlayerShips.Add(("Bireme" + id, y, x));
+                PlayerShips.Add(("Bireme" + id, y + 1, x));
                 id++;
             }
             else
@@ -163,16 +168,16 @@ namespace BattleShits.Models
         public void RandomShips()
         {
             Random random = new Random();
-            while(RobotShips.Count<3)
+            while (RobotShips.Count < 3)
             {
                 int x = random.Next(0, 3);
                 int y = random.Next(0, 3);
                 var newCoord = ("Double", y, x);
 
-                if (!RobotShips.Contains(newCoord)) 
+                if (!RobotShips.Contains(newCoord))
                 {
                     RobotShips.Add(newCoord);
-                    RobotBoard[y, x] = 1; 
+                    RobotBoard[y, x] = 1;
                 }
             }
         }
@@ -180,10 +185,12 @@ namespace BattleShits.Models
         // Spelare skjuter skott på en koordinat
         public bool Shoot(int x, int y)
         {
+            P1Shots++;
             if (RobotBoard[y, x] == 1) // Träff på skepp
             {
                 RobotBoard[y, x] = 2; // Markera träff
                 Console.WriteLine($"Träff på skepp vid koordinat ({y}, {x})!");
+                P1Hits++;
 
                 // Kontrollera om hela skeppet är sänkt
                 var shipCoordinates = RobotShips.Where(s => s.y == y && s.x == x).ToList();
@@ -194,13 +201,13 @@ namespace BattleShits.Models
                     // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
                     foreach (var coord in RobotShips.Where(s => s.name == "name"))
                     {
-                        
+
                         if (RobotBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
                         {
                             Console.WriteLine("You hit part of a bireme");
                             isSunk = false;
                             break;
-                            
+
                         }
                     }
 
@@ -225,6 +232,7 @@ namespace BattleShits.Models
 
         public bool RobotShoot()
         {
+            P2Shots++;
             Random random = new Random();
             int x = random.Next(0, 3);
             int y = random.Next(0, 3);
@@ -233,6 +241,7 @@ namespace BattleShits.Models
             {
                 PlayerBoard[y, x] = 2; // Markera träff
                 Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({y}, {x})!");
+                P2Hits++;
 
                 // Kontrollera om hela skeppet är sänkt
                 var shipCoordinates = PlayerShips.Where(s => s.y == y && s.x == x).ToList();
@@ -272,22 +281,23 @@ namespace BattleShits.Models
 
         public bool AreAllPlayerShipsSunk()
         {
-            foreach (var (name, y, x) in PlayerShips)
+            if (P2Hits == 30)
             {
-                if (PlayerBoard[y, x] != 2) return false;
+                Winner = "Player 2";
+                return true;
             }
-            return true;
+            return false;
         }
         public bool AreAllRobotShipsSunk()
         {
-            foreach (var (name, y, x) in RobotShips)
+            if (P1Hits == 3)
             {
-                if (RobotBoard[y, x] != 2) return false;
+                Winner = "Player 1";
+                return true;
             }
-            return true;
+            return false;
+
+
         }
-
-
     }
-
 }
