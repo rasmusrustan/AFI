@@ -107,5 +107,12 @@ else
 </table>
 
 <div style="text-align: center; margin-top: 20px;">
-    <a asp-action="SeaBattle" asp-controller="BattleShip" class="btn btn-primary">Ready to battle!</a>
+    @if (Model.AllShipsPlaced)
+    {
+        <a asp-action="SeaBattle" asp-controller="BattleShip" class="btn btn-primary">Ready to battle!</a>
+    }
+    else
+    {
+        <p>Du måste placera alla skepp innan du kan starta spelet!</p>
+    }
 </div>

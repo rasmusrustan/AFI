@@ -27,6 +27,12 @@
         public bool CanPlaceLongship => LongshipCount < MaxLongship;
         public bool CanPlaceTrireme => TriremeCount < MaxTrireme;
         public bool CanPlaceBireme => BiremeCount < MaxBireme;
+
+        public bool AllShipsPlaced =>
+        TitanicCount == MaxTitanic &&
+        LongshipCount == MaxLongship &&
+        TriremeCount == MaxTrireme &&
+        BiremeCount == MaxBireme;
         public BattleField()
             {
                 PlayerBoard = new int[10, 10];
