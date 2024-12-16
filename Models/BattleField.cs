@@ -33,6 +33,13 @@ namespace BattleShits.Models
         LongshipCount == MaxLongship &&
         TriremeCount == MaxTrireme &&
         BiremeCount == MaxBireme;
+
+        public int P1shots = 0;
+        public int P2shots = 0;
+        public int P1Hits = 0; 
+        public int P2Hits = 0;
+
+        public string Winner = null;
         public BattleField()
         {
             PlayerBoard = new int[10, 10];
@@ -218,8 +225,10 @@ namespace BattleShits.Models
         // Spelare skjuter skott på en koordinat
         public bool Shoot(int x, int y)
         {
+            P1shots++;
             if (RobotBoard[y, x] == 1) // Träff på skepp
             {
+                P1Hits++;
                 RobotBoard[y, x] = 2; // Markera träff
                 Console.WriteLine($"Träff på skepp vid koordinat ({y}, {x})!");
 
@@ -262,13 +271,14 @@ namespace BattleShits.Models
 
 
         public bool RobotShoot()
-        {
+        {   P2shots++;
             Random random = new Random();
             int x = random.Next(0, 3);
             int y = random.Next(0, 3);
 
             if (PlayerBoard[y, x] == 1) // Träff på skepp
             {
+                P2Hits++;
                 PlayerBoard[y, x] = 2; // Markera träff
                 Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({y}, {x})!");
 
@@ -310,19 +320,21 @@ namespace BattleShits.Models
 
         public bool AreAllPlayerShipsSunk()
         {
-            foreach (var (name, y, x) in PlayerShips)
+            if (P2Hits == 30)
             {
-                if (PlayerBoard[y, x] != 2) return false;
+                Winner = "Player 2";
+                return true;
             }
-            return true;
+            return false;
         }
         public bool AreAllRobotShipsSunk()
         {
-            foreach (var (name, y, x) in RobotShips)
+            if (P1Hits == 3)
             {
-                if (RobotBoard[y, x] != 2) return false;
+                Winner = "Player 1";
+                return true;
             }
-            return true;
+            return false;
         }
 
 
