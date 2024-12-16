@@ -41,7 +41,7 @@ namespace BattleShits.Models
             {
                 connection.Open();
                 var command = new SqlCommand(
-                    "INSERT INTO [Users] (Username, Password, Email) VALUES (@Username, @Password)",
+                    "INSERT INTO [Users] (Username, Password) VALUES (@Username, @Password)",
                     connection
                 );
 

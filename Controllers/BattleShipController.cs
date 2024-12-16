@@ -1,9 +1,10 @@
 ﻿using BattleShits.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BattleShits.Controllers
 {
-
+    [AllowAnonymous]
     public class BattleShipController : Controller
     {
         private static BattleField battleField = new BattleField();
