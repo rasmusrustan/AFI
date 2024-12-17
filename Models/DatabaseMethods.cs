@@ -15,6 +15,10 @@ namespace BattleShits.Models
         };
 
         // Publika metoder
+
+        /*
+         * Hämtar första lediga skepp plats
+         */
         public int getFirstNullShip(int gameId, string boardnr)
         {
             string sqlstring = "SELECT * FROM @boardnr WHERE Game_Id == @gameId";
@@ -31,7 +35,6 @@ namespace BattleShits.Models
 
                 sqlDataAdapter.Fill(dataSet, "Game");
 
-
                 boardPos = dataSet.Tables["Game"].Rows.Count;
 
                 return boardPos + 1;
@@ -47,6 +50,10 @@ namespace BattleShits.Models
             }
         }
 
+        /*
+         * Skapar spel och returnerar det skapade id:t
+         * Stoppar även in spelare i spelet
+         */
         public int CreateGame(string Player1, string Player2)
         {
             string sqlstring = "INSERT INTO [Game] ([Player1], [Player2]) VALUES (@Player1, @Player2); SELECT SCOPE_IDENTITY();";
@@ -57,9 +64,7 @@ namespace BattleShits.Models
             try
             {
                 sqlConnection.Open();
-                var result = sqlCommand.ExecuteScalar();  // ExecuteScalar returns the first column of the first row in the result set
-
-                
+                var result = sqlCommand.ExecuteScalar();
                 return Convert.ToInt32(result);
             }
             catch (Exception e)
@@ -72,5 +77,7 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
         }
+
+
     }
 }
