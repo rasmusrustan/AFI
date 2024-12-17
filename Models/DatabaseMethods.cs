@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.SqlTypes;
 
@@ -197,8 +198,6 @@ namespace BattleShits.Models
             sqlCommand1.Parameters.AddWithValue("@position", position);
             Boolean hit = false;
 
-
-
             try
             {
                 sqlConnection.Open();
@@ -220,9 +219,73 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
 
-            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (";
+            string playerName = getPlayerNamefromGame(gameId, playerNumber);
+            int hit2 = 0;
+            if (hit)
+            {
+                hit2 = 1;
+            }
+            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (@gameId, @playerName, @position; @hitt)";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand2.Parameters.AddWithValue("@position", position);
+            sqlCommand2.Parameters.AddWithValue("@playerName", playerName);
+            sqlCommand2.Parameters.AddWithValue("@hitt", hit2);
+
+            try
+            {
+                sqlConnection.Open();
+
+                int i = sqlCommand2.ExecuteNonQuery();
+                if (i != 1)
+                {
+                    Console.WriteLine("Insert command to Shots failed");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
 
             return hit;
+        }
+
+        public string getPlayerNamefromGame(int gameId, int playerNumber)
+        {
+            string sqlstring2 = "SELECT Player1 FROM Game WHERE Game_Id = @gameId";
+            if (playerNumber == 2)
+            {
+                sqlstring2 = "SELECT Player2 FROM Game WHERE Game_Id = @gameId";
+            }
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+            string playerName = "NoName";
+
+            try
+            {
+                sqlConnection.Open();
+
+                object result = sqlCommand2.ExecuteScalar();
+                if (result != DBNull.Value && result != null)
+                {
+                    playerName = result.ToString();
+                }
+
+                return playerName;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return playerName;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
         }
 
 
