@@ -12,6 +12,7 @@
 @if (Model.CanPlaceTitanic)
 {
     <form method="post" asp-action="PlaceTitanic">
+        <input type="hidden" name="target" value="player" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -33,6 +34,7 @@ else
 @if (Model.CanPlaceLongship)
 {
     <form method="post" asp-action="PlaceLongShip">
+        <input type="hidden" name="target" value="player" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -54,6 +56,7 @@ else
 @if (Model.CanPlaceTrireme)
 {
     <form method="post" asp-action="PlaceTrippleShip">
+        <input type="hidden" name="target" value="player" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -75,6 +78,7 @@ else
 @if (Model.CanPlaceBireme)
 {
     <form method="post" asp-action="PlaceDoubleShip">
+        <input type="hidden" name="target" value="player" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>

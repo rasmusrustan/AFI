@@ -37,7 +37,7 @@ namespace BattleShits.Controllers
             return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
         [HttpPost]
-        public IActionResult PlaceDoubleShip(string orientation, int x, int y)
+        public IActionResult PlaceDoubleShip(string target, string orientation, int x, int y)
         {
             int length = 2;
             if (battleField.PlayerBoard == null)
@@ -48,7 +48,7 @@ namespace BattleShits.Controllers
             {
                 if (x >= 0 && x + length - 1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceBireme(orientation, x, y);
+                    battleField.PlaceBireme(target, orientation, x, y);
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace BattleShits.Controllers
             {
                 if (y >= 0 && y + length - 1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
                 {
-                   battleField.PlaceBireme(orientation, x, y);
+                   battleField.PlaceBireme(target, orientation, x, y);
                 }
                 else
                 {
@@ -77,7 +77,7 @@ namespace BattleShits.Controllers
             ViewBag.Message = "Bireme placerat!";
             return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
-        public IActionResult PlaceTrippleShip(string orientation, int x, int y)
+        public IActionResult PlaceTrippleShip(string target, string orientation, int x, int y)
         {
             int length = 3;
             if (battleField.PlayerBoard == null)
@@ -88,7 +88,7 @@ namespace BattleShits.Controllers
             {
                 if (x >= 0 && x + (length - 1) < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0)&& PosIsEmpty(orientation, x, y, length))
                 {
-                        battleField.PlaceTrireme(orientation, x, y);
+                        battleField.PlaceTrireme(target, orientation, x, y);
                 }
                 else
                 {
@@ -100,7 +100,7 @@ namespace BattleShits.Controllers
             {
                 if (y >= 0 && y + length - 1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceTrireme(orientation, x, y);
+                    battleField.PlaceTrireme(target, orientation, x, y);
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace BattleShits.Controllers
             ViewBag.Message = "Trireme placerat!";
             return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
-        public IActionResult PlaceLongShip(string orientation, int x, int y)
+        public IActionResult PlaceLongShip(string target, string orientation, int x, int y)
         {
             int length = 4;
             if (battleField.PlayerBoard == null)
@@ -128,7 +128,7 @@ namespace BattleShits.Controllers
             {
                 if (x >= 0 && x + length-1 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x,y, length))
                 {
-                    battleField.PlaceLongShip(orientation, x, y);
+                    battleField.PlaceLongship(target, orientation, x, y);
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace BattleShits.Controllers
             {
                 if (y >= 0 && y + length-1 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceLongShip(orientation, x, y);
+                    battleField.PlaceLongship(target, orientation, x, y);
                 }
                 else
                 {
@@ -157,7 +157,7 @@ namespace BattleShits.Controllers
             ViewBag.Message = "Longship placerat!";
             return View("~/Views/Battle/AddShipP1.cshtml", battleField);
         }
-        public IActionResult PlaceTitanic(string orientation, int x, int y)
+        public IActionResult PlaceTitanic(string target, string orientation, int x, int y)
         {
             int length = 5;
             if (battleField.PlayerBoard == null)
@@ -168,7 +168,7 @@ namespace BattleShits.Controllers
             {
                 if (x >= 0 && x + 4 < battleField.PlayerBoard.GetLength(1) && y >= 0 && y < battleField.PlayerBoard.GetLength(0) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceTitanic(orientation, x, y);
+                    battleField.PlaceTitanic(target, orientation, x, y);
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace BattleShits.Controllers
             {
                 if (y >= 0 && y + 4 < battleField.PlayerBoard.GetLength(0) && x >= 0 && x < battleField.PlayerBoard.GetLength(1) && PosIsEmpty(orientation, x, y, length))
                 {
-                    battleField.PlaceTitanic(orientation, x, y);
+                    battleField.PlaceTitanic(target, orientation, x, y);
                 }
                 else
                 {
