@@ -15,13 +15,14 @@ namespace BattleShits.Models
         };
 
         // Publika metoder
-        public int getFirstNullShip(int gameId)
+        public int getFirstNullShip(int gameId, string boardnr)
         {
-
+            string sqlstring = "SELECT * FROM @boardnr WHERE Game_Id == @gameId";
             SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand.Parameters.AddWithValue("@boardnr", boardnr);
             SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
-
+            int boardPos = 0;
             DataSet dataSet = new DataSet();
 
             try
@@ -30,34 +31,41 @@ namespace BattleShits.Models
 
                 sqlDataAdapter.Fill(dataSet, "Game");
 
-                int board1Id = -1;
 
-                board1Id = dataSet.Tables["Tbl_Person"].Rows.Count;
+                boardPos = dataSet.Tables["Game"].Rows.Count;
 
-                if (count > 0)
-                {
-                    while (i < count)
-                    {
-                        PersonDetails personDetails = new PersonDetails();
-                        personDetails.Id = Convert.ToUInt16(dataSet.Tables["Tbl_Person"].Rows[i]["Pe_Id"]);
-                        personDetails.Name = dataSet.Tables["Tbl_Person"].Rows[i]["Pe_Namn"].ToString();
-
-                        i++;
-                        personDetailsList.Add(personDetails);
-                    }
-                    errormsg = "";
-                    return personDetailsList;
-                }
-                else
-                {
-                    errormsg = "No person details exist in database";
-                    return null;
-                }
+                return boardPos + 1;
             }
             catch (Exception e)
             {
-                errormsg = e.Message;
-                return null;
+                Console.WriteLine(e.Message);
+                return boardPos;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public int CreateGame(string Player1, string Player2)
+        {
+            string sqlstring = "INSERT INTO [Game] ([Player1], [Player2]) VALUES (@Player1, @Player2); SELECT SCOPE_IDENTITY();";
+            SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@Player1", Player1);
+            sqlCommand.Parameters.AddWithValue("@Player2", Player2);
+
+            try
+            {
+                sqlConnection.Open();
+                var result = sqlCommand.ExecuteScalar();  // ExecuteScalar returns the first column of the first row in the result set
+
+                
+                return Convert.ToInt32(result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return -1;
             }
             finally
             {
