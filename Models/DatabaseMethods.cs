@@ -225,7 +225,7 @@ namespace BattleShits.Models
             {
                 hit2 = 1;
             }
-            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (@gameId, @playerName, @position; @hitt)";
+            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (@gameId, @playerName, @position, @hitt)";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand2.Parameters.AddWithValue("@position", position);
