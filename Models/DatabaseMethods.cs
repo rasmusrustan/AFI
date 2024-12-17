@@ -220,7 +220,7 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
 
-            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES ("
+            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (";
 
             return hit;
         }
