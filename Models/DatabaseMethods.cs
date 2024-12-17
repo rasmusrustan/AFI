@@ -21,7 +21,7 @@ namespace BattleShits.Models
          */
         public int getFirstNullShip(int gameId, string boardnr)
         {
-            string sqlstring = "SELECT * FROM @boardnr WHERE Game_Id == @gameId";
+            string sqlstring = "SELECT * FROM @boardnr WHERE Game_Id = @gameId";
             SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand.Parameters.AddWithValue("@boardnr", boardnr);
@@ -130,6 +130,99 @@ namespace BattleShits.Models
             {
                 sqlConnection.Close();
             }
+        }
+
+        /*
+         * Placerar ut skepp
+         */
+        private void AddShip(int x, int y, int gameId, int playernumber)
+        {
+            string boardnumber = "Board1";
+            if (playernumber == 2)
+            {
+                boardnumber = "Board2";
+            }
+            int firstAvailable = getFirstNullShip(gameId, boardnumber);
+
+            string shipListPosition = "Ship" + firstAvailable;
+
+            string position = "X" + x + " " + "Y" + y;
+
+            string sqlstring = "UPDATE @board SET (@shipListPosition) =  @position WHERE Game_Id = @gameId";
+
+            SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@board", boardnumber);
+            sqlCommand.Parameters.AddWithValue("@shipListPosition", shipListPosition);
+            sqlCommand.Parameters.AddWithValue("@position", position);
+            sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+
+            try
+            {
+                sqlConnection.Open();
+
+                int i = sqlCommand.ExecuteNonQuery();
+                if (i != 1)
+                {
+                    Console.WriteLine("Insert command1 failed");
+                }
+                return;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        private Boolean Shoot(int x, int y, int playerNumber, int gameId)
+        {
+            string position = "X" + x + " " + "Y" + y;
+
+            string sqlstring1 = "SELECT * FROM @board WHERE Position = @position AND Game_Id = @gameId";
+
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            if (playerNumber == 1)
+            {
+                sqlCommand1.Parameters.AddWithValue("@board", "Board1");
+            }
+            else
+            {
+                sqlCommand1.Parameters.AddWithValue("@board", "Board2");
+            }
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand1.Parameters.AddWithValue("@position", position);
+            Boolean hit = false;
+
+
+
+            try
+            {
+                sqlConnection.Open();
+                int count = (int)sqlCommand1.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    hit = true; // If the position exists, it's a hit
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (e.g., database connection issues)
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Ensure the connection is closed after the query
+                sqlConnection.Close();
+            }
+
+            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES ("
+
+            return hit;
         }
 
 
