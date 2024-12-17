@@ -11,8 +11,13 @@ namespace BattleShits.Controllers
 
         public IActionResult AddShipP1()
         {
-            battleField = new BattleField();
+            //battleField = new BattleField();
             return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+        }
+        public IActionResult AddShipP2()
+        {
+            battleField = new BattleField();
+            return View("~/Views/Battle/AddShipP2.cshtml", battleField);
         }
 
         public IActionResult SeaBattle()
@@ -74,8 +79,15 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
-            ViewBag.Message = "Bireme placerat!";
-            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            if (target == "Robot")
+            {
+                
+                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+            }
+            else
+            {
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            }
         }
         public IActionResult PlaceTrippleShip(string target, string orientation, int x, int y)
         {
@@ -114,8 +126,15 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
-            ViewBag.Message = "Trireme placerat!";
-            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            if (target == "Robot")
+            {
+
+                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+            }
+            else
+            {
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            }
         }
         public IActionResult PlaceLongShip(string target, string orientation, int x, int y)
         {
@@ -154,8 +173,15 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
-            ViewBag.Message = "Longship placerat!";
-            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            if (target == "Robot")
+            {
+
+                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+            }
+            else
+            {
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            }
         }
         public IActionResult PlaceTitanic(string target, string orientation, int x, int y)
         {
@@ -194,8 +220,15 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle/AddShipP1.cshtml", battleField);
             }
 
-            ViewBag.Message = "Titanic placerat!";
-            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            if (target == "Robot")
+            {
+
+                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+            }
+            else
+            {
+                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            }
         }
         public IActionResult Fire(int x, int y)
 {

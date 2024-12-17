@@ -1,0 +1,119 @@
+﻿@model BattleShits.Models.BattleField
+
+@{
+    ViewData["Title"] = "AddShipP2";
+}
+<h1>Here you will place your ships for the upcoming battle</h1>
+<h2>Once you have placed all the 10 ships required, press ready to continue to the game</h2>
+
+<p>@ViewBag.Message</p>
+
+<h2>Place the Titanic - 5 slots</h2>
+@if (Model.CanPlaceTitanic)
+{
+    <form method="post" asp-action="PlaceTitanic">
+        <input type="hidden" name="target" value="Robot" />
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Titanic</button>
+    </form>
+}
+else
+{
+    <p>Titanic är redan placerat!</p>
+}
+
+<h2>Place 2 Longships - 4 slots each</h2>
+@if (Model.CanPlaceLongship)
+{
+    <form method="post" asp-action="PlaceLongShip">
+        <input type="hidden" name="target" value="Robot" />
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Longship</button>
+    </form>
+}
+else
+{
+    <p>Alla Longships är redan placerade!</p>
+}
+
+<h2>Place 3 Triremes - 3 slots each</h2>
+@if (Model.CanPlaceTrireme)
+{
+    <form method="post" asp-action="PlaceTrippleShip">
+        <input type="hidden" name="target" value="Robot" />
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Trireme</button>
+    </form>
+}
+else
+{
+    <p>Alla Triremes är redan placerade!</p>
+}
+
+<h2>Place 4 Biremes - 2 slots each</h2>
+@if (Model.CanPlaceBireme)
+{
+    <form method="post" asp-action="PlaceDoubleShip">
+        <input type="hidden" name="target" value="Robot" />
+        <label for="orientation">Orientering:</label>
+        <select id="orientation" name="orientation" required>
+            <option value="hor">Horizontell</option>
+            <option value="vert">Vertikal</option>
+        </select>
+        <label for="x">Startkoordinat X:</label>
+        <input type="number" id="x" name="x" min="0" max="9" required />
+        <label for="y">Startkoordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" required />
+        <button type="submit">Placera Bireme</button>
+    </form>
+}
+else
+{
+    <p>Alla Biremes är redan placerade!</p>
+}
+
+<h3>Your ships</h3>
+<table>
+    @for (int i = 0; i < Model.RobotBoard.GetLength(0); i++)
+    {
+        <tr>
+            @for (int j = 0; j < Model.RobotBoard.GetLength(1); j++)
+            {
+                string cellContent = Model.RobotBoard[i, j] == 1 ? "🚢" : "🌊";
+                <td>@cellContent</td>
+            }
+        </tr>
+    }
+</table>
+
+<div style="text-align: center; margin-top: 20px;">
+
+
+    <a asp-action="SeaBattle" asp-controller="BattleShip" class="btn btn-primary">Ready to battle!</a>
+
+
+</div>
