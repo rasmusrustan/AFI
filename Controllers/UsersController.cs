@@ -47,14 +47,15 @@ namespace BattleShits.Controllers
 
         // GET: /User/Login
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? ReturnUrl = null)
         {
+            ViewData["ReturnUrl"] = ReturnUrl;
             return View();
         }
 
         // POST: /User/Login
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password, string? ReturnUrl)
         {
             var isValidUser = userMethods.ValidateUser(username, password);
 
@@ -72,7 +73,11 @@ namespace BattleShits.Controllers
 
                 await HttpContext.SignInAsync("CookieAuth", principal);
 
-                TempData["SuccessMessage"] = $"Welcome, {username}!";
+                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                {
+                    return Redirect(ReturnUrl);
+                }
+
                 return RedirectToAction("test", "Users");
             }
 

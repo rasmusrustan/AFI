@@ -20,6 +20,7 @@ builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
         options.LoginPath = "/Users/Login";
+        options.ReturnUrlParameter = "ReturnUrl";
     });
 
 var app = builder.Build();
