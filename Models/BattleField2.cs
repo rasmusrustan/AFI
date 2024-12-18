@@ -46,15 +46,8 @@ namespace BattleShits.Models
             RobotBoard = new int[10, 10];
             PlayerShips = new List<(string name, int y, int x)>();
             RobotShips = new List<(string name, int y, int x)>();
-            RandomShips();
         }
 
-        // Lägg till skepp på specifika koordinater
-        public void PlaceSingleShip(int x, int y)
-        {
-            PlayerShips.Add(("Single", x, y));
-            PlayerBoard[y, x] = 1;
-        }
         public void PlaceBireme(string target, string orientation, int x, int y)
         {
             // Kontrollera vilket bräde och lista som ska användas
@@ -214,57 +207,68 @@ namespace BattleShits.Models
         }
 
 
-        public void RandomShips()
-        {
-            PlaceBireme("Robot", "hor", 0, 0);
-
-        }
 
         // Spelare skjuter skott på en koordinat
-        public bool Shoot(int x, int y)
+        public bool Shoot(string target, int x, int y)
         {
-            P1shots++;
-            if (RobotBoard[y, x] == 1) // Träff på skepp
+            // Kontrollera vilket bräde och lista som ska användas beroende på vem som skjuter
+            int[,] targetBoard = target == "Player" ? PlayerBoard : RobotBoard;
+            var targetShips = target == "Player" ? PlayerShips : RobotShips;
+
+            // Spelare 1 skjuter på Robot eller Spelare 2
+            if (target == "Player")
             {
-                P1Hits++;
-                RobotBoard[y, x] = 2; // Markera träff
+                P1shots++;
+            }
+            else // Spelare 2 skjuter på Robot eller Spelare 1
+            {
+                P2shots++;
+            }
+
+            // Kolla om skottet träffar ett skepp
+            if (targetBoard[y, x] == 1) // Träff på skepp
+            {
+                if (target == "Player1") P1Hits++; // Öka träffarna för Spelare 1
+                else P2Hits++; // Öka träffarna för Spelare 2
+
+                targetBoard[y, x] = 2; // Markera träff
+
                 Console.WriteLine($"Träff på skepp vid koordinat ({y}, {x})!");
 
                 // Kontrollera om hela skeppet är sänkt
-                var shipCoordinates = RobotShips.Where(s => s.y == y && s.x == x).ToList();
+                var shipCoordinates = targetShips.Where(s => s.y == y && s.x == x).ToList();
                 foreach (var ship in shipCoordinates)
                 {
                     bool isSunk = true;
 
-                    // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
-                    foreach (var coord in RobotShips.Where(s => s.name == "name"))
+                    // Kolla om alla delar av skeppet är träffade
+                    foreach (var coord in targetShips.Where(s => s.name == ship.name))
                     {
-
-                        if (RobotBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
+                        if (targetBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
                         {
-                            Console.WriteLine("You hit part of a bireme");
                             isSunk = false;
                             break;
-
                         }
                     }
 
                     if (isSunk)
                     {
-                        Console.WriteLine("You sunk a bireme!");
+                        Console.WriteLine($"Du sänkte ett {ship.name}!");
                     }
                 }
 
                 return true;
             }
-            else if (RobotBoard[y, x] == 0) // Miss
+            else if (targetBoard[y, x] == 0) // Miss
             {
-                RobotBoard[y, x] = 3; // Markera miss
+                targetBoard[y, x] = 3; // Markera miss
                 Console.WriteLine($"Miss vid koordinat ({y}, {x})");
                 return false;
             }
+
             return false;
         }
+
 
 
 

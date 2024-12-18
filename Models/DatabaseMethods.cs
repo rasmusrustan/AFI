@@ -62,7 +62,7 @@ namespace BattleShits.Models
          */
         public int CreateGame(string Player1, string Player2)
         {
-            string sqlstring = "INSERT INTO [Game] ([Player1], [Player2]) VALUES (@Player1, @Player2); SELECT SCOPE_IDENTITY();";
+            string sqlstring = "INSERT INTO [Game] ([Player1], [Player2], [NextPlayer]) VALUES (@Player1, @Player2, 1); SELECT SCOPE_IDENTITY();";
             SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@Player1", Player1);
             sqlCommand.Parameters.AddWithValue("@Player2", Player2);
@@ -254,6 +254,10 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
 
+            if (!hit) // Uppdatera nextplayer om miss
+            {
+                updateNextPlayer(gameId);
+            }
             return hit;
         }
 
@@ -287,6 +291,155 @@ namespace BattleShits.Models
             {
                 Console.WriteLine(e.Message);
                 return playerName;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public int getNumberOfHits(int gameId, int playerNumber)
+        {
+            string playerName = getPlayerNamefromGame(gameId,playerNumber);
+            string sqlstring = "SELECT Id FROM Shots WHERE Game_Id = @gameId AND Hits = 1 AND Player = @playerName";
+            SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand.Parameters.AddWithValue("@playerName", playerName);
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+            DataSet dataSet = new DataSet();
+            int hits = -1;
+
+            try
+            {
+                sqlConnection.Open();
+
+                sqlDataAdapter.Fill(dataSet, "Shots");
+
+                hits = dataSet.Tables["Shots"].Rows.Count;
+
+                if (hits > 29)
+                {
+                    declareWinner(gameId, playerName);
+                }
+
+                return hits;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return hits;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        /*
+         * Updaterar vinnare och sätter game finished till 1
+         */
+        public void declareWinner(int gameId, string playerName)
+        {
+            string sqlstring1 = "UPDATE Game SET (Winner) = @playerName WHERE Game_Id = @gameId";
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
+
+            string sqlstring2 = "UPDATE Game SET (GameFinished) = 1 WHERE Game_Id = @gameId";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+
+            try
+            {
+                sqlConnection.Open();
+
+                int i = sqlCommand1.ExecuteNonQuery();
+                if (i != 1)
+                {
+                    Console.WriteLine("Insert command playername failed");
+                }
+
+                int j = sqlCommand2.ExecuteNonQuery();
+                if (j != 1)
+                {
+                    Console.WriteLine("Insert command gameFinished failed");
+                }
+
+                return;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        /*
+         * Uppdaterar Nextplayer i Game, om 1 sätts till 2 ochvise versa
+         */
+        public void updateNextPlayer(int gameId)
+        {
+            int nextPlayer = getNextPlayer(gameId);
+            if (nextPlayer == 1)
+            {
+                nextPlayer = 2;
+            }
+            else
+            {
+                nextPlayer = 1;
+            }
+
+            string sqlstring2 = "UPDATE Game SET (NextPlayer) = @nextPlayer WHERE Game_Id = @gameId";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand2.Parameters.AddWithValue("@nextPlayer", nextPlayer);
+
+            try
+            {
+                sqlConnection.Open();
+
+                int j = sqlCommand2.ExecuteNonQuery();
+                if (j != 1)
+                {
+                    Console.WriteLine("Update command nextPlayer failed");
+                }
+
+                return;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        /*
+         * Hämtar NextPlayer från Game
+         */
+        public int getNextPlayer(int gameId)
+        {
+            string sqlstring = "SELECT NextPlayer FROM Game WHERE Game_Id = @gameId";
+            SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                return reader.GetInt32(0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return -1;
             }
             finally
             {
