@@ -179,6 +179,9 @@ namespace BattleShits.Models
             }
         }
 
+        /*
+         * Skjutförfarande, returnerar true/false på träff
+         */
         private Boolean Shoot(int x, int y, int playerNumber, int gameId)
         {
             string position = "X" + x + " " + "Y" + y;
@@ -254,6 +257,9 @@ namespace BattleShits.Models
             return hit;
         }
 
+        /*
+         * Returnerar spelarnamn
+         */
         public string getPlayerNamefromGame(int gameId, int playerNumber)
         {
             string sqlstring2 = "SELECT Player1 FROM Game WHERE Game_Id = @gameId";
