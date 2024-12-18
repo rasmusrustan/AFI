@@ -1,4 +1,4 @@
-﻿@model BattleShits.Models
+﻿@model BattleShits.Models.DatabaseMethods;
 
 @{
     ViewData["Title"] = "SeaBattle";
@@ -14,7 +14,7 @@
         <tr>
             @for (int j = 0; j < 10; j++)
             {
-                string cellContent = Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 1, ViewBag.gameId) == false ? "🚢" : "🌊";
+                string cellContent = @Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 1, ViewBag.gameId) == 0 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>
@@ -29,13 +29,13 @@
             @for (int j = 0; j < 10; j++)
             {
                 <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
-                    @if (Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 3)
+                    @if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 3)
                     {
                         <span>💧</span>
                         // Miss
                     }
 
-                    else if (Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 2)
+                    else if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 2)
                     {
                         <span>🔥</span>
                         // Träff

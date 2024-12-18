@@ -1,4 +1,4 @@
-﻿@model BattleShits.Models.BattleField
+﻿@model BattleShits.Models.DatabaseMethods;
 
 @{
     ViewData["Title"] = "SeaBattle2";
@@ -10,12 +10,12 @@
 
 <h3>Ditt Bräde</h3>
 <table>
-    @for (int i = 0; i < Model.P2Board.GetLength(0); i++)
+    @for (int i = 0; i < 10; i++)
     {
         <tr>
-            @for (int j = 0; j < Model.P2Board.GetLength(1); j++)
+            @for (int j = 0; j < 10; j++)
             {
-                string cellContent = Model.P2Board[i, j] == 1 ? "🚢" : "🌊";
+                string cellContent = @Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 2, ViewBag.gameId) == 0 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>
@@ -24,19 +24,19 @@
 
 <h3>Här skjuter du!</h3>
 <table>
-    @for (int i = 0; i < Model.P1Board.GetLength(0); i++)
+    @for (int i = 0; i < 10; i++)
     {
         <tr>
-            @for (int j = 0; j < Model.P1Board.GetLength(1); j++)
+            @for (int j = 0; j < 10; j++)
             {
-                <td style="width: 50px; height: 50px; text-align: center; border: 1px solid black;">
-                    @if (Model.P1Board[i, j] == 3)
+                <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
+                    @if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 3)
                     {
                         <span>💧</span>
-                        // Vatten
+                        // Miss
                     }
 
-                    else if (Model.P1Board[i, j] == 2)
+                    else if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 2)
                     {
                         <span>🔥</span>
                         // Träff
@@ -44,7 +44,7 @@
                     else
                     {
                         <span>🌊</span>
-                        // Miss
+                        // Vatten
                     }
                 </td>
             }

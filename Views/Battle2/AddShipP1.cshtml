@@ -1,4 +1,4 @@
-﻿@model BattleShits.Models
+﻿@model BattleShits.Models.DatabaseMethods;
 
 @{
     ViewData["Title"] = "AddShipP1";
@@ -9,11 +9,11 @@
 <p>@ViewBag.Message</p>
 
 <h2>Place the Titanic - 5 slots</h2>
-@if (Model.CanPlaceTitanic)
+@if (1 == 1)
 {
     <form method="post" asp-action="PlaceTitanic">
         <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
-        <input type="hidden" name="gameId" value=Viewbag.GameId />
+        <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -32,11 +32,11 @@ else
 }
 
 <h2>Place 2 Longships - 4 slots each</h2>
-@if (Model.CanPlaceLongship)
+@if (1 == 1)
 {
     <form method="post" asp-action="PlaceLongShip">
         <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
-        <input type="hidden" name="gameId" value=Viewbag.GameId />
+        <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -55,11 +55,11 @@ else
 }
 
 <h2>Place 3 Triremes - 3 slots each</h2>
-@if (Model.CanPlaceTrireme)
+@if (1 == 1)
 {
     <form method="post" asp-action="PlaceTrippleShip">
         <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
-        <input type="hidden" name="gameId" value=Viewbag.GameId />
+        <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -78,11 +78,11 @@ else
 }
 
 <h2>Place 4 Biremes - 2 slots each</h2>
-@if (Model.CanPlaceBireme)
+@if (1 == 1)
 {
     <form method="post" asp-action="PlaceDoubleShip">
         <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
-        <input type="hidden" name="gameId" value=Viewbag.GameId />
+        <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -102,12 +102,12 @@ else
 
 <h3>Your ships</h3>
 <table>
-    @for (int i = 0; i < Model.P1Board.GetLength(0); i++)
+    @for (int i = 0; i < 10; i++)
     {
         <tr>
-            @for (int j = 0; j < Model.P1Board.GetLength(1); j++)
+            @for (int j = 0; j < 10; j++)
             {
-                string cellContent = Model.P1Board[i, j] == 1 ? "🚢" : "🌊";
+                string cellContent = @Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 1, ViewBag.gameId) == 0 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>
@@ -117,7 +117,7 @@ else
 <div style="text-align: center; margin-top: 20px;">
 
 
-    <a asp-action="SeaBattle" asp-controller="BattleShip"
+    <a asp-action="SeaBattle" asp-controller="BattleField2"
        asp-route-gameId="@ViewBag.gameId"
        asp-route-boardNumber="@ViewBag.boardNumber"
        class="btn btn-primary">Ready to battle!</a>

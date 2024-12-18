@@ -5,24 +5,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace BattleShits.Controllers
 {
     [AllowAnonymous]
-    public class BattleShipController2 : Controller
+    public class BattleField2Controller : Controller
     {
-        private static BattleField2 battleField = new BattleField2();
-        DatabaseMethods database = new DatabaseMethods();
+        /*private static BattleField2 battleField = new BattleField2();*/
+        private static DatabaseMethods database = new DatabaseMethods();
 
         public IActionResult AddShipP1()
         {
             int gameId = database.CreateGame("P1", "P2");
             ViewBag.GameId = gameId;
 
-            return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+            return View("~/Views/Battle2/AddShipP1.cshtml", database);
         }
         public IActionResult AddShipP2()
         {
             int gameId = database.CreateGame("P1", "P2");
             ViewBag.GameId = gameId;
 
-            return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+            return View("~/Views/Battle2/AddShipP2.cshtml", database);
         }
 
         public IActionResult SeaBattle(int gameId, int boardNumber)
@@ -34,7 +34,7 @@ namespace BattleShits.Controllers
             {
                 ViewBag.boardNumber2 = 1;
             }
-            return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+            return View("~/Views/Battle2/SeaBattle.cshtml", database);
         }
         public IActionResult SeaBattle2(int gameId, int boardNumber)
         {
@@ -45,11 +45,11 @@ namespace BattleShits.Controllers
             {
                 ViewBag.boardNumber2 = 1;
             }
-            return View("~/Views/Battle/SeaBattle2.cshtml", battleField);
+            return View("~/Views/Battle2/SeaBattle2.cshtml", database);
         }
         public IActionResult Result()
         {
-            return View("~/Views/Battle/Result.cshtml", battleField);
+            return View("~/Views/Battle2/Result.cshtml", database);
         }
 
         [HttpPost]
@@ -71,7 +71,7 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && database.checkIfEmpty(playerNumber,x,y,orientation,length,gameId))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber,x,y,orientation,length,gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -81,12 +81,12 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -96,23 +96,23 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
 
             if (playerNumber == 1)
             {
 
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
             else
             {
-                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
         public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId)
@@ -133,7 +133,7 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber,x,y,orientation,length,gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -143,12 +143,12 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -158,23 +158,23 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
 
             if (playerNumber == 1)
             {
 
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
             else
             {
-                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
         public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId)
@@ -195,7 +195,7 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -205,12 +205,12 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -220,23 +220,23 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
 
             if (playerNumber == 1)
             {
 
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
             else
             {
-                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
         public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId)
@@ -257,7 +257,7 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -267,12 +267,12 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -282,25 +282,26 @@ namespace BattleShits.Controllers
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
 
             if (playerNumber == 1)
             {
 
-                return View("~/Views/Battle/AddShipP1.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP1.cshtml", database);
             }
             else
             {
-                return View("~/Views/Battle/AddShipP2.cshtml", battleField);
+                return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
+        /*
         public IActionResult Fire(string user, int x, int y)
         {
             // Användarens skott
@@ -311,26 +312,26 @@ namespace BattleShits.Controllers
             if (battleField.AreAllP2ShipsSunk())
             {
                 ViewBag.Message += " Alla Spealre 2's skepp är sänkta! Spelare 1 vinner!";
-                return View("~/Views/Battle/Result.cshtml", battleField);
+                return View("~/Views/Battle2/Result.cshtml", database);
             }
 
 
             if (battleField.AreAllP1ShipsSunk())
             {
                 ViewBag.Message += " Alla spelare 1's skepp är sänkta! Spelare 2 vinner!";
-                return View("~/Views/Battle/Result.cshtml", battleField);
+                return View("~/Views/Battle2/Result.cshtml", battleField);
             }
 
             if (user == "P1")
             {
 
-                return View("~/Views/Battle/SeaBattle.cshtml", battleField);
+                return View("~/Views/Battle2/SeaBattle.cshtml", battleField);
             }
             else
             {
-                return View("~/Views/Battle/SeaBattle2.cshtml", battleField);
+                return View("~/Views/Battle2/SeaBattle2.cshtml", battleField);
             }
-        }
+        }*/
 
     }
 }
