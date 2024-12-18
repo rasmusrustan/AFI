@@ -8,8 +8,8 @@ namespace BattleShits.Models
     {
         public int[,] P1Board { get; set; } // Spelbräde (0 = tomt, 1 = skepp, 2 = träff, 3 = miss)
         public int[,] P2Board { get; set; }
-        public List<(string name, int y, int x)> P1Ships { get; set; }
-        public List<(string name, int y, int x)> P2Ships { get; set; }
+        public List<(int y, int x)> P1Ships { get; set; }
+        public List<(int y, int x)> P2Ships { get; set; }
         public int id = 0;
 
         public int TitanicCount { get; private set; } = 0;
@@ -57,32 +57,14 @@ namespace BattleShits.Models
             // Validera orientering och placering
             if (orientation == "hor")
             {
-                if (x + 1 >= board.GetLength(1))
-                {
-                    Console.WriteLine("Skeppet ryms inte horisontellt på brädet.");
-                    return;
-                }
-
-                board[y, x] = 1;
-                board[y, x + 1] = 1;
-
-                shipList.Add(("Bireme" + id, y, x));
-                shipList.Add(("Bireme" + id, y, x + 1));
+                shipList.Add(( y, x));
+                shipList.Add((y, x + 1));
                 id++;
             }
             else if (orientation == "vert")
             {
-                if (y + 1 >= board.GetLength(0))
-                {
-                    Console.WriteLine("Skeppet ryms inte vertikalt på brädet.");
-                    return;
-                }
-
-                board[y, x] = 1;
-                board[y + 1, x] = 1;
-
-                shipList.Add(("Bireme" + id, y, x));
-                shipList.Add(("Bireme" + id, y + 1, x));
+                shipList.Add((y, x));
+                shipList.Add((y + 1, x));
                 id++;
             }
             else

@@ -550,5 +550,85 @@ namespace BattleShits.Models
                 return true;
             }
         }
+
+        /*
+         * Kontrollerar om ett skott finns och om det är en träff eller ej
+         */
+        public int checkShots(int playerNumber, int gameId, int x, int y)
+        {
+            string playerName = getPlayerNamefromGame(gameId, playerNumber);
+            string position = "X" + x + " " + "Y" + y;
+
+            string sqlstring1 = "SELECT Id FROM Shots WHERE Position = @position AND Game_Id = @gameId AND Player = @playerName";
+
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand1.Parameters.AddWithValue("@position", position);
+            sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
+            Boolean thereIsAShot = false;
+
+            try
+            {
+                sqlConnection.Open();
+                int count = (int)sqlCommand1.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    thereIsAShot = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (e.g., database connection issues)
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Ensure the connection is closed after the query
+                sqlConnection.Close();
+            }
+
+            string sqlstring2 = "SELECT Id FROM Shots WHERE Position = @position AND Game_Id = @gameId AND Player = @playerName AND Hit = 1";
+
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand2.Parameters.AddWithValue("@position", position);
+            sqlCommand2.Parameters.AddWithValue("@playerName", playerName);
+            Boolean hit = false;
+
+            try
+            {
+                sqlConnection.Open();
+                int count = (int)sqlCommand2.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    hit = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions (e.g., database connection issues)
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Ensure the connection is closed after the query
+                sqlConnection.Close();
+            }
+
+            if (thereIsAShot && hit)
+            {
+                return 2;
+            }
+            else if (thereIsAShot && (hit == false))
+            {
+                return 3;
+            }
+            else
+            {
+                return 1;
+            }
+        }
     }
 }

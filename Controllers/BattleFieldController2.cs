@@ -23,8 +23,15 @@ namespace BattleShits.Controllers
             return View("~/Views/Battle/AddShipP2.cshtml", battleField);
         }
 
-        public IActionResult SeaBattle()
+        public IActionResult SeaBattle(int gameId, int boardNumber)
         {
+            ViewBag.boardNumber = boardNumber;
+            ViewBag.gameId = gameId;
+            ViewBag.boardNumber2 = 2;
+            if (boardNumber == 2)
+            {
+                ViewBag.boardNumber2 = 1;
+            }
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
         public IActionResult SeaBattle2()
@@ -314,34 +321,6 @@ namespace BattleShits.Controllers
             {
                 return View("~/Views/Battle/SeaBattle2.cshtml", battleField);
             }
-        }
-        public bool PosIsEmpty(string user, string orientation, int x, int y, int length)
-        {
-            int[,] board = user == "P1" ? battleField.P1Board : battleField.P2Board;
-
-            if (orientation == "hor")
-            {
-                for (int i = 0; i < length; i++)
-                {
-                    if (board[y, x + i] != 0)
-                    {
-                        ViewBag.Message = "Platsen är upptagen!";
-                        return false;
-                    }
-                }
-            }
-            else if (orientation == "vert")
-            {
-                for (int i = 0; i < length; i++)
-                {
-                    if (board[y + i, x] != 0)
-                    {
-                        ViewBag.Message = "Platsen är gen!";
-                        return false;
-                    }
-                }
-            }
-            return true;
         }
 
     }
