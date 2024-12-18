@@ -77,7 +77,7 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < battleField.P1Board.GetLength(0) && x >= 0 && x < battleField.P1Board.GetLength(1) && PosIsEmpty(user, orientation, x, y, length))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -139,7 +139,7 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < battleField.P1Board.GetLength(0) && x >= 0 && x < battleField.P1Board.GetLength(1) && PosIsEmpty(user, orientation, x, y, length))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -201,7 +201,7 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < battleField.P1Board.GetLength(0) && x >= 0 && x < battleField.P1Board.GetLength(1) && PosIsEmpty(user, orientation, x, y, length))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -263,7 +263,7 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < battleField.P1Board.GetLength(0) && x >= 0 && x < battleField.P1Board.GetLength(1) && PosIsEmpty(user, orientation, x, y, length))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId))
                 {
                     for (int i = 0; i < length; i++)
                     {
