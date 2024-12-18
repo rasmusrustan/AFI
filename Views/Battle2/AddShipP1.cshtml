@@ -1,4 +1,4 @@
-﻿@model BattleShits.Models.BattleField
+﻿@model BattleShits.Models
 
 @{
     ViewData["Title"] = "AddShipP1";
@@ -12,7 +12,7 @@
 @if (Model.CanPlaceTitanic)
 {
     <form method="post" asp-action="PlaceTitanic">
-        <input type="hidden" name="user" value="P1" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
         <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
@@ -35,7 +35,8 @@ else
 @if (Model.CanPlaceLongship)
 {
     <form method="post" asp-action="PlaceLongShip">
-        <input type="hidden" name="user" value="P1" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -57,7 +58,8 @@ else
 @if (Model.CanPlaceTrireme)
 {
     <form method="post" asp-action="PlaceTrippleShip">
-        <input type="hidden" name="user" value="P1" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -79,7 +81,8 @@ else
 @if (Model.CanPlaceBireme)
 {
     <form method="post" asp-action="PlaceDoubleShip">
-        <input type="hidden" name="user" value="P1" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>

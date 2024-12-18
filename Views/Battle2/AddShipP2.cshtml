@@ -1,4 +1,4 @@
-﻿@model BattleShits.Models.BattleField
+﻿@model BattleShits.Models
 
 @{
     ViewData["Title"] = "AddShipP2";
@@ -12,7 +12,8 @@
 @if (Model.CanPlaceTitanic)
 {
     <form method="post" asp-action="PlaceTitanic">
-        <input type="hidden" name="target" value="P2" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,2)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -34,7 +35,8 @@ else
 @if (Model.CanPlaceLongship)
 {
     <form method="post" asp-action="PlaceLongShip">
-        <input type="hidden" name="target" value="P2" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,2)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -56,7 +58,8 @@ else
 @if (Model.CanPlaceTrireme)
 {
     <form method="post" asp-action="PlaceTrippleShip">
-        <input type="hidden" name="target" value="P2" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,2)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -78,7 +81,8 @@ else
 @if (Model.CanPlaceBireme)
 {
     <form method="post" asp-action="PlaceDoubleShip">
-            <input type="hidden" name="target" value="P2" />
+        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,2)" />
+        <input type="hidden" name="gameId" value=Viewbag.GameId />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -113,7 +117,10 @@ else
 <div style="text-align: center; margin-top: 20px;">
 
 
-    <a asp-action="SeaBattle2" asp-controller="BattleShip" class="btn btn-primary">Ready to battle!</a>
+    <a asp-action="SeaBattle" asp-controller="BattleShip"
+       asp-route-gameId="@ViewBag.gameId"
+       asp-route-boardNumber="@ViewBag.boardNumber"
+       class="btn btn-primary">Ready to battle!</a>
 
 
 </div>

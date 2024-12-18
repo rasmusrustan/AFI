@@ -19,6 +19,8 @@ namespace BattleShits.Controllers
         }
         public IActionResult AddShipP2()
         {
+            int gameId = database.CreateGame("P1", "P2");
+            ViewBag.GameId = gameId;
 
             return View("~/Views/Battle/AddShipP2.cshtml", battleField);
         }
@@ -34,8 +36,15 @@ namespace BattleShits.Controllers
             }
             return View("~/Views/Battle/SeaBattle.cshtml", battleField);
         }
-        public IActionResult SeaBattle2()
+        public IActionResult SeaBattle2(int gameId, int boardNumber)
         {
+            ViewBag.boardNumber = boardNumber;
+            ViewBag.gameId = gameId;
+            ViewBag.boardNumber2 = 2;
+            if (boardNumber == 2)
+            {
+                ViewBag.boardNumber2 = 1;
+            }
             return View("~/Views/Battle/SeaBattle2.cshtml", battleField);
         }
         public IActionResult Result()
