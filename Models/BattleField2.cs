@@ -6,10 +6,10 @@ namespace BattleShits.Models
 {
     public class BattleField2
     {
-        public int[,] PlayerBoard { get; set; } // Spelbräde (0 = tomt, 1 = skepp, 2 = träff, 3 = miss)
-        public int[,] RobotBoard { get; set; }
-        public List<(string name, int y, int x)> PlayerShips { get; set; }
-        public List<(string name, int y, int x)> RobotShips { get; set; }
+        public int[,] P1Board { get; set; } // Spelbräde (0 = tomt, 1 = skepp, 2 = träff, 3 = miss)
+        public int[,] P2Board { get; set; }
+        public List<(string name, int y, int x)> P1Ships { get; set; }
+        public List<(string name, int y, int x)> P2Ships { get; set; }
         public int id = 0;
 
         public int TitanicCount { get; private set; } = 0;
@@ -42,17 +42,17 @@ namespace BattleShits.Models
         public string Winner = null;
         public BattleField2()
         {
-            PlayerBoard = new int[10, 10];
-            RobotBoard = new int[10, 10];
-            PlayerShips = new List<(string name, int y, int x)>();
-            RobotShips = new List<(string name, int y, int x)>();
+            P1Board = new int[10, 10];
+            P2Board = new int[10, 10];
+            P1Ships = new List<(string name, int y, int x)>();
+            P2Ships = new List<(string name, int y, int x)>();
         }
 
-        public void PlaceBireme(string target, string orientation, int x, int y)
+        public void PlaceBireme(string user, string orientation, int x, int y)
         {
             // Kontrollera vilket bräde och lista som ska användas
-            int[,] board = target == "Robot" ? RobotBoard : PlayerBoard;
-            var shipList = target == "Robot" ? RobotShips : PlayerShips;
+            int[,] board = user == "P1" ? P1Board : P2Board;
+            var shipList = user == "P1" ? P1Ships : P2Ships;
 
             // Validera orientering och placering
             if (orientation == "hor")
@@ -91,11 +91,11 @@ namespace BattleShits.Models
             }
         }
 
-        public void PlaceTrireme(string target, string orientation, int x, int y)
+        public void PlaceTrireme(string user, string orientation, int x, int y)
         {
             // Kontrollera bräde och lista baserat på target
-            int[,] board = target == "Robot" ? RobotBoard : PlayerBoard;
-            var shipList = target == "Robot" ? RobotShips : PlayerShips;
+            int[,] board = user == "P1" ? P1Board : P2Board;
+            var shipList = user == "P1" ? P1Ships : P2Ships;
 
             // Validera orienteringen och positionen
             if (orientation == "hor" && x + 2 < board.GetLength(1))
@@ -126,7 +126,7 @@ namespace BattleShits.Models
             }
         }
 
-        public void PlaceLongship(string target, string orientation, int x, int y)
+        public void PlaceLongship(string user, string orientation, int x, int y)
         {
             if (!CanPlaceLongship)
             {
@@ -135,8 +135,8 @@ namespace BattleShits.Models
             }
 
             // Kontrollera bräde och lista baserat på target
-            int[,] board = target == "Robot" ? RobotBoard : PlayerBoard;
-            var shipList = target == "Robot" ? RobotShips : PlayerShips;
+            int[,] board = user == "P1" ? P1Board : P2Board;
+            var shipList = user == "P1" ? P1Ships : P2Ships;
 
             // Validera orienteringen och positionen
             if (orientation == "hor" && x + 3 < board.GetLength(1))
@@ -167,7 +167,7 @@ namespace BattleShits.Models
             }
         }
 
-        public void PlaceTitanic(string target, string orientation, int x, int y)
+        public void PlaceTitanic(string user, string orientation, int x, int y)
         {
             if (!CanPlaceTitanic)
             {
@@ -175,8 +175,8 @@ namespace BattleShits.Models
                 return;
             }
 
-            int[,] board = target == "Robot" ? RobotBoard : PlayerBoard;
-            var shipList = target == "Robot" ? RobotShips : PlayerShips;
+            int[,] board = user == "P1" ? P1Board : P2Board;
+            var shipList = user == "P1" ? P1Ships : P2Ships;
 
             if (orientation == "hor" && x + 4 < board.GetLength(1))
             {
@@ -209,26 +209,26 @@ namespace BattleShits.Models
 
 
         // Spelare skjuter skott på en koordinat
-        public bool Shoot(string target, int x, int y)
+        public bool Shoot(string user, int x, int y)
         {
             // Kontrollera vilket bräde och lista som ska användas beroende på vem som skjuter
-            int[,] targetBoard = target == "Player" ? PlayerBoard : RobotBoard;
-            var targetShips = target == "Player" ? PlayerShips : RobotShips;
+            int[,] targetBoard = user == "P1" ? P2Board : P1Board;
+            var targetShips = user == "P1" ? P2Ships : P1Ships;
 
-            // Spelare 1 skjuter på Robot eller Spelare 2
-            if (target == "Player")
+            // Logga skott 
+            if (user == "P1")
             {
                 P1shots++;
             }
-            else // Spelare 2 skjuter på Robot eller Spelare 1
+            else
             {
                 P2shots++;
             }
 
             // Kolla om skottet träffar ett skepp
-            if (targetBoard[y, x] == 1) // Träff på skepp
+            if (targetBoard[y, x] == 1)
             {
-                if (target == "Player1") P1Hits++; // Öka träffarna för Spelare 1
+                if (user == "Player1") P1Hits++; // Öka träffarna för Spelare 1
                 else P2Hits++; // Öka träffarna för Spelare 2
 
                 targetBoard[y, x] = 2; // Markera träff
@@ -272,56 +272,8 @@ namespace BattleShits.Models
 
 
 
-        public bool RobotShoot()
-        {
-            P2shots++;
-            Random random = new Random();
-            int x = random.Next(0, 3);
-            int y = random.Next(0, 3);
 
-            if (PlayerBoard[y, x] == 1) // Träff på skepp
-            {
-                P2Hits++;
-                PlayerBoard[y, x] = 2; // Markera träff
-                Console.WriteLine($"Robot träffade ditt skepp vid koordinat ({y}, {x})!");
-
-                // Kontrollera om hela skeppet är sänkt
-                var shipCoordinates = PlayerShips.Where(s => s.y == y && s.x == x).ToList();
-                foreach (var ship in shipCoordinates)
-                {
-                    bool isSunk = true;
-
-                    // Kolla om alla delar av skeppet är träffade (dvs. markeras som 2 på brädet)
-                    foreach (var coord in PlayerShips.Where(s => s.name == "name"))
-                    {
-
-                        if (PlayerBoard[coord.y, coord.x] != 2) // Om någon del av skeppet inte är träffad
-                        {
-                            Console.WriteLine("Robot hit part of a bireme");
-                            isSunk = false;
-                            break;
-
-                        }
-                    }
-
-                    if (isSunk)
-                    {
-                        Console.WriteLine("Robot sunk a bireme!");
-                    }
-                }
-
-                return true;
-            }
-            else if (PlayerBoard[y, x] == 0) // Miss
-            {
-                PlayerBoard[y, x] = 3; // Markera miss
-                Console.WriteLine($"Robot missade vid koordinat ({y}, {x})");
-                return false;
-            }
-            return false;
-        }
-
-        public bool AreAllPlayerShipsSunk()
+        public bool AreAllP1ShipsSunk()
         {
             if (P2Hits == 30)
             {
@@ -330,7 +282,7 @@ namespace BattleShits.Models
             }
             return false;
         }
-        public bool AreAllRobotShipsSunk()
+        public bool AreAllP2ShipsSunk()
         {
             if (P1Hits == 2)
             {

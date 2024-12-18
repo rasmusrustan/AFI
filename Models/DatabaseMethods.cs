@@ -136,7 +136,7 @@ namespace BattleShits.Models
         /*
          * Placerar ut skepp
          */
-        private void AddShip(int x, int y, int gameId, int playernumber)
+        public void AddShip(int x, int y, int gameId, int playernumber)
         {
             string boardnumber = "Board1";
             if (playernumber == 2)
@@ -447,6 +447,108 @@ namespace BattleShits.Models
             }
         }
 
+        /*
+         * Kontrollerar om skepp finns
+         */
+        public Boolean checkIfEmpty(int boardnumber, int x, int y, string orientation, int length, int gameId)
+        {
+            Boolean occupied = false;
+            for (int loop = 0; loop < length; loop++)
+            {  
+                if (orientation == "hor")
+                {
+                    string position = "X" + (x+loop) + " " + "Y" + y;
+                    string sqlstring1 = "SELECT * FROM @board WHERE Position = @position AND Game_Id = @gameId";
 
+                    SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+                    if (boardnumber == 1)
+                    {
+                        sqlCommand1.Parameters.AddWithValue("@board", "Board1");
+                    }
+                    else
+                    {
+                        sqlCommand1.Parameters.AddWithValue("@board", "Board2");
+                    }
+                    sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+                    sqlCommand1.Parameters.AddWithValue("@position", position);
+
+                    try
+                    {
+                        sqlConnection.Open();
+                        int count = (int)sqlCommand1.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            occupied = true; // If the position exists, it's a hit
+                        }
+                        if (occupied)
+                        {
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle any exceptions (e.g., database connection issues)
+                        Console.WriteLine(ex.Message);
+                    }
+                    finally
+                    {
+                        // Ensure the connection is closed after the query
+                        sqlConnection.Close();
+                    }
+                }
+
+                else
+                {
+                    string position = "X" + x + " " + "Y" + (y + loop);
+                    string sqlstring1 = "SELECT * FROM @board WHERE Position = @position AND Game_Id = @gameId";
+
+                    SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+                    if (boardnumber == 1)
+                    {
+                        sqlCommand1.Parameters.AddWithValue("@board", "Board1");
+                    }
+                    else
+                    {
+                        sqlCommand1.Parameters.AddWithValue("@board", "Board2");
+                    }
+                    sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+                    sqlCommand1.Parameters.AddWithValue("@position", position);
+
+                    try
+                    {
+                        sqlConnection.Open();
+                        int count = (int)sqlCommand1.ExecuteScalar();
+
+                        if (count > 0)
+                        {
+                            occupied = true; // If the position exists, it's a hit
+                        }
+                        if (occupied)
+                        {
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle any exceptions (e.g., database connection issues)
+                        Console.WriteLine(ex.Message);
+                    }
+                    finally
+                    {
+                        // Ensure the connection is closed after the query
+                        sqlConnection.Close();
+                    }
+                }
+            }
+            if (occupied)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
