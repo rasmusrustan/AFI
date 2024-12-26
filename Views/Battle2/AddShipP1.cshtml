@@ -102,12 +102,12 @@ else
 
 <h3>Your ships</h3>
 <table>
-    @for (int i = 0; i < 10; i++)
+    @for (int i = 0; i < ViewBag.P1Board.GetLength(0); i++)
     {
         <tr>
-            @for (int j = 0; j < 10; j++)
+            @for (int j = 0; j < ViewBag.P1Board.GetLength(1); j++)
             {
-                string cellContent = @Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 1, ViewBag.gameId) == 0 ? "🚢" : "🌊";
+                string cellContent = ViewBag.P1Board[i, j] == 1 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>

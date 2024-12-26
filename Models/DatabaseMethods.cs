@@ -122,24 +122,62 @@ namespace BattleShits.Models
                     Console.WriteLine("Insert command1 failed");
                 }
 
-                boardNumber2 = Convert.ToInt32(sqlCommand1.ExecuteScalar());
+                boardNumber2 = Convert.ToInt32(sqlCommand2.ExecuteScalar());
                 if (boardNumber2 == -1)
                 {
                     Console.WriteLine("Insert command2 failed");
                 }
+
+                
                 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                
             }
             finally
             {
                 sqlConnection.Close();
             }
 
-            updateBoardNumber(boardNumber1, boardNumber2, gameId);
+            int BoardNr1 = 3;
+            int BoardNr2 = 3;
+
+            updateBoardNumber(getBoardNumberFromBoards(1,gameId), getBoardNumberFromBoards(2,gameId), gameId);
             return;
+        }
+
+        public int getBoardNumberFromBoards(int board, int gameId)
+        {
+            string boardNumber = "Board" + board;
+            string sqlstring1 = "SELECT (Id) FROM " + boardNumber + " WHERE (Game_Id) = @gameId";
+            string sqlstring2 = "INSERT INTO Board2 (Game_Id) VALUES (@gameId)";
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", Convert.ToInt32(gameId));
+            int boardId = -3;
+
+            try
+            {
+                sqlConnection.Open();
+
+                object result = sqlCommand1.ExecuteScalar();
+                if (result != DBNull.Value && result != null)
+                {
+                    boardId = Convert.ToInt32(result);
+                }
+
+                return boardId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return boardId;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
         }
 
         /*
@@ -275,10 +313,10 @@ namespace BattleShits.Models
          */
         public string getPlayerNamefromGame(int gameId, int playerNumber)
         {
-            string sqlstring2 = "SELECT (Player1) FROM (Game) WHERE (Game_Id) = (@gameId)";
+            string sqlstring2 = "SELECT (Player1) FROM Game WHERE (Id) = (@gameId)";
             if (playerNumber == 2)
             {
-                sqlstring2 = "SELECT (Player2) FROM (Game) WHERE (Game_Id) = (@gameId)";
+                sqlstring2 = "SELECT (Player2) FROM Game WHERE (Id) = (@gameId)";
             }
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
@@ -852,16 +890,15 @@ namespace BattleShits.Models
         public int getBoardNumber(int gameId, int boardNumber)
         {
             string board = "Board" + boardNumber;
-            string sqlstring2 = "SELECT (Id) FROM @board WHERE (Game_Id) = @gameId";
+            string sqlstring2 = "SELECT (Id) FROM " +board+ " WHERE (Game_Id) = @gameId";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
-            sqlCommand2.Parameters.AddWithValue("@board", board);
 
             try
             {
                 sqlConnection.Open();
-                SqlDataReader reader = sqlCommand2.ExecuteReader();
-                return reader.GetInt32(0);
+                object number = sqlCommand2.ExecuteScalar();
+                return Convert.ToInt32(number);
             }
             catch (Exception ex)
             {
@@ -877,9 +914,8 @@ namespace BattleShits.Models
         public Boolean doesShipExist(int board, int boardNumber, string shipType)
         {
             string boardType = "Board" + boardNumber;
-            string sqlstring2 = "SELECT (@shipType) FROM " +boardType+ " WHERE (Id) = @board";
+            string sqlstring2 = "SELECT COUNT(*) FROM " + boardType + " WHERE Id = @board AND " + shipType + " IS NOT NULL";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
-            sqlCommand2.Parameters.AddWithValue("@shipType", shipType);
             sqlCommand2.Parameters.AddWithValue("@board", board);
             Boolean exists = false;
 
@@ -890,7 +926,7 @@ namespace BattleShits.Models
 
                 if (count > 0)
                 {
-                    exists = true; 
+                    exists = true;
                 }
                 return exists;
             }
