@@ -13,7 +13,12 @@ namespace BattleShits.Controllers
         public IActionResult AddShipP1()
         {
             int gameId = database.CreateGame("P1", "P2");
+            int[,] p1Board = database.getBoard(gameId,1);
+            string playerName = database.getPlayerNamefromGame(gameId, 1);
             ViewBag.GameId = gameId;
+            ViewBag.PlayerName = playerName;
+            ViewBag.p1Board = p1Board;
+            
 
             return View("~/Views/Battle2/AddShipP1.cshtml", database);
         }

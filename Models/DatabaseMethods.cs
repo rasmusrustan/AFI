@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Linq.Expressions;
 
 namespace BattleShits.Models
 {
@@ -9,6 +10,8 @@ namespace BattleShits.Models
     {
         //Konstruktor
         public DatabaseMethods() { }
+
+
 
         SqlConnection sqlConnection = new SqlConnection
         {
@@ -272,10 +275,10 @@ namespace BattleShits.Models
          */
         public string getPlayerNamefromGame(int gameId, int playerNumber)
         {
-            string sqlstring2 = "SELECT (Player1) FROM Game WHERE (Game_Id) = @gameId";
+            string sqlstring2 = "SELECT (Player1) FROM (Game) WHERE (Game_Id) = (@gameId)";
             if (playerNumber == 2)
             {
-                sqlstring2 = "SELECT (Player2) FROM Game WHERE (Game_Id) = @gameId";
+                sqlstring2 = "SELECT (Player2) FROM (Game) WHERE (Game_Id) = (@gameId)";
             }
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
@@ -609,12 +612,12 @@ namespace BattleShits.Models
 
         public void updateBoardNumber(int number1, int number2, int gameId)
         {
-            string sqlstring2 = "UPDATE Game SET (Board1) = @number WHERE (Id) = @gameId";
+            string sqlstring2 = "UPDATE Game SET Board1 = @number WHERE Id = @gameId";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand2.Parameters.AddWithValue("@number", number1);
 
-            string sqlstring3 = "UPDATE Game SET (Board2) = @number WHERE (Id) = @gameId";
+            string sqlstring3 = "UPDATE Game SET Board2 = @number WHERE Id = @gameId";
             SqlCommand sqlCommand3 = new SqlCommand(sqlstring3, sqlConnection);
             sqlCommand3.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand3.Parameters.AddWithValue("@number", number2);
@@ -641,6 +644,326 @@ namespace BattleShits.Models
             {
                 Console.WriteLine(e.Message);
                 return;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        //Returnerar ett spelbräde
+        public int[,] getBoard(int gameId, int boardNumber)
+        {
+            Boolean titanicExists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "Titanic");
+            Boolean longShip1Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "LongShip1");
+            Boolean longShip2Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "LongShip2");
+            Boolean trippleShip1Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip1");
+            Boolean trippleShip2Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip2");
+            Boolean trippleShip3Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip3");
+            Boolean doubleShip1Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip1");
+            Boolean doubleShip2Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip2");
+            Boolean doubleShip3Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip3");
+            Boolean doubleShip4Exists = doesShipExist(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip4");
+
+            // Sätt alla värden till 0
+            int[,] board1 = new int[10, 10];
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    board1[i,j] = 0;
+                }
+            }
+
+            if (titanicExists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "Titanic");
+                List<string> positions = getShipPositions(shipNumber, "Titanic");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (longShip1Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "LongShip1");
+                List<string> positions = getShipPositions(shipNumber, "LongShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (longShip2Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "LongShip2");
+                List<string> positions = getShipPositions(shipNumber, "LongShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (trippleShip1Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip1");
+                List<string> positions = getShipPositions(shipNumber, "TrippleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (trippleShip2Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip2");
+                List<string> positions = getShipPositions(shipNumber, "TrippleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (trippleShip3Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "TrippleShip3");
+                List<string> positions = getShipPositions(shipNumber, "TrippleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+            
+            if (doubleShip1Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip1");
+                List<string> positions = getShipPositions(shipNumber, "DoubleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (doubleShip2Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip2");
+                List<string> positions = getShipPositions(shipNumber, "DoubleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (doubleShip3Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip3");
+                List<string> positions = getShipPositions(shipNumber, "DoubleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            if (doubleShip4Exists)
+            {
+                int shipNumber = getShipNumber(getBoardNumber(gameId, boardNumber), boardNumber, "DoubleShip4");
+                List<string> positions = getShipPositions(shipNumber, "DoubleShip");
+
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    string positionString = positions[i];
+                    string[] split = positionString.Split(' ');
+
+                    int x = int.Parse(split[0].Substring(1));
+                    int y = int.Parse(split[1].Substring(1));
+
+                    board1[x, y] = 1;
+                }
+            }
+
+            return board1;
+        }
+
+        //Returnerar spelbrädes id för en bräda
+        public int getBoardNumber(int gameId, int boardNumber)
+        {
+            string board = "Board" + boardNumber;
+            string sqlstring2 = "SELECT (Id) FROM @board WHERE (Game_Id) = @gameId";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand2.Parameters.AddWithValue("@board", board);
+
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand2.ExecuteReader();
+                return reader.GetInt32(0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public Boolean doesShipExist(int board, int boardNumber, string shipType)
+        {
+            string boardType = "Board" + boardNumber;
+            string sqlstring2 = "SELECT (@shipType) FROM " +boardType+ " WHERE (Id) = @board";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@shipType", shipType);
+            sqlCommand2.Parameters.AddWithValue("@board", board);
+            Boolean exists = false;
+
+            try
+            {
+                sqlConnection.Open();
+                int count = (int)sqlCommand2.ExecuteScalar();
+
+                if (count > 0)
+                {
+                    exists = true; 
+                }
+                return exists;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return exists;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        // Returnerar en lista med strings på alla positioner skeppet har
+        public List<string> getShipPositions(int shipNumber, string shipType)
+        {
+            List<string> positions = new List<string>();
+            string ships = shipType + "s";
+            string sqlstring2 = "SELECT * FROM " + ships + " WHERE (Id) = @shipNumber";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@shipNumber", shipNumber);
+
+            try
+            {
+                sqlConnection.Open();
+                using (SqlDataReader reader = sqlCommand2.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            positions.Add(reader.GetValue(i).ToString());
+                        }
+                    }
+                }
+                if (positions.Count > 0)
+                {
+                    positions.RemoveAt(positions.Count - 1);
+                    positions.RemoveAt(0);
+                }
+                return positions;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public int getShipNumber(int board, int boardNumber, string shipTypeNr)
+        {
+            string boardType = "Board" + boardNumber;
+            string sqlstring2 = "SELECT (@shipTypeNr) FROM @boardType WHERE (Id) = @board";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@shipTypeNr", shipTypeNr);
+            sqlCommand2.Parameters.AddWithValue("@boardType", boardType);
+            sqlCommand2.Parameters.AddWithValue("@board", board);
+
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader reader = sqlCommand2.ExecuteReader();
+                return reader.GetInt32(0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
             }
             finally
             {

@@ -12,7 +12,7 @@
 @if (1 == 1)
 {
     <form method="post" asp-action="PlaceTitanic">
-        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
@@ -35,7 +35,7 @@ else
 @if (1 == 1)
 {
     <form method="post" asp-action="PlaceLongShip">
-        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
@@ -58,7 +58,7 @@ else
 @if (1 == 1)
 {
     <form method="post" asp-action="PlaceTrippleShip">
-        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
@@ -81,7 +81,7 @@ else
 @if (1 == 1)
 {
     <form method="post" asp-action="PlaceDoubleShip">
-        <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId,1)" />
+        <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
