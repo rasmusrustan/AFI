@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.FileSystemGlobbing;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Linq.Expressions;
@@ -19,44 +20,6 @@ namespace BattleShits.Models
         };
 
         // Publika metoder
-
-        /*
-         * Hämtar första lediga skepp plats
-         */
-        public int getFirstNullShip(int gameId, string boardnr)
-        {
-            string sqlstring = "SELECT * FROM (@boardnr) WHERE (Game_Id) = (@gameId)";
-            SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@gameId", gameId);
-            sqlCommand.Parameters.AddWithValue("@boardnr", boardnr);
-            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
-            int boardPos = 0;
-            DataSet dataSet = new DataSet();
-
-            try
-            {
-                sqlConnection.Open();
-
-                sqlDataAdapter.Fill(dataSet, "Game");
-
-                boardPos = dataSet.Tables["Game"].Rows.Count;
-                if (boardPos < 1)
-                {
-                    boardPos = 0;
-                }
-
-                return boardPos + 1;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return boardPos;
-            }
-            finally
-            {
-                sqlConnection.Close();
-            }
-        }
 
         /*
          * Skapar spel och returnerar det skapade id:t
@@ -141,8 +104,8 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
 
-            int BoardNr1 = 3;
-            int BoardNr2 = 3;
+            /*int BoardNr1 = 3;
+            int BoardNr2 = 3;*/
 
             updateBoardNumber(getBoardNumberFromBoards(1,gameId), getBoardNumberFromBoards(2,gameId), gameId);
             return;
@@ -183,42 +146,211 @@ namespace BattleShits.Models
         /*
          * Placerar ut skepp
          */
-        public void AddShip(int x, int y, int gameId, int playernumber)
+        public void AddShip(int x, int y, int gameId, int playernumber, string shipType)
         {
             string boardnumber = "Board1";
+            string position = "X" + x + " " + "Y" + y;
             if (playernumber == 2)
             {
                 boardnumber = "Board2";
             }
-            int firstAvailable = getFirstNullShip(gameId, boardnumber);
 
-            string shipListPosition = "Ship" + firstAvailable;
+            int boardId = getBoardNumberFromBoards(playernumber, gameId);
+            int numberOfShips = -1;
+            int numberOfPositions = -1;
 
-            string position = "X" + x + " " + "Y" + y;
+            if (shipType == "DoubleShip")
+            {
+                numberOfShips = 4;
+                numberOfPositions = 2;
+            }
+            if (shipType == "TripleShip")
+            {
+                numberOfShips = 3;
+                numberOfPositions = 3;
+            }
+            if (shipType == "LongShip")
+            {
+                numberOfShips = 2;
+                numberOfPositions = 4;
+            }
+            if (shipType == "Titanic")
+            {
+                numberOfShips = 1;
+                numberOfPositions = 5;
+            }
 
-            string sqlstring = "UPDATE @board SET (@shipListPosition) =  (@position) WHERE (Game_Id) = (@gameId)";
+            for (int k = 0; k < numberOfShips; k++)
+            {
+                string shipTypeAndNumber = shipType + (k + 1);
+                if (shipType == "Titanic")
+                {
+                    shipTypeAndNumber = "Titanic";
+                }
 
+                if (doesShipExist(getBoardNumber(gameId, playernumber), playernumber, shipTypeAndNumber))
+                {
+                    int shipNumber = getShipIdentity(playernumber, boardId, shipTypeAndNumber);
+                    int firstpos = -1;
+                    for (int i = 0; i < numberOfPositions; i++)
+                    {
+                        string pos = "Pos" + (i+1);
+                        if (!getOccupancyOfShipPos(shipType, shipNumber, pos))
+                        {
+                            firstpos = i + 1;
+                            break;
+                        }
+                    }
+
+                    // If firstpos still -1 all ship positions taken
+                    if (firstpos != -1)
+                    {
+                        string shipTable = shipType + "s";
+                        
+                        string sqlstring = "UPDATE " + shipTable + " SET Pos" + firstpos + " = @position WHERE Id = @shipNumber";
+
+                        SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+                        sqlCommand.Parameters.AddWithValue("@shipNumber", shipNumber);
+                        sqlCommand.Parameters.AddWithValue("@position", position);
+
+                        try
+                        {
+                            sqlConnection.Open();
+
+                            int i = sqlCommand.ExecuteNonQuery();
+                            if (i != 1)
+                            {
+                                Console.WriteLine("Insert command shipPos failed");
+                            }
+
+                            return;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            return;
+                        }
+                        finally
+                        {
+                            sqlConnection.Close();
+                        }
+                    }
+                }
+                else
+                {
+                    int scalarInt = -1;
+                    Boolean catched = false;
+                    string shipTable = shipType + "s";
+                    string sqlstring = "INSERT INTO " + shipTable + " (Pos1) VALUES (@position); SELECT SCOPE_IDENTITY();";
+                    SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
+                    sqlCommand.Parameters.AddWithValue("@position", position);
+
+                    try
+                    {
+                        sqlConnection.Open();
+
+                        object scalar = sqlCommand.ExecuteScalar();
+                        scalarInt = Convert.ToInt32(scalar);
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        catched = true;
+                    }
+                    finally
+                    {
+                        sqlConnection.Close();
+                    }
+
+                    if (!catched)
+                    {
+                        int shipId = scalarInt;
+                        sqlstring = "UPDATE " + boardnumber + " SET " + shipTypeAndNumber + " = @shipId";
+                        SqlCommand sqlCommand3 = new SqlCommand(sqlstring, sqlConnection);
+                        sqlCommand3.Parameters.AddWithValue("@shipId", shipId);
+                        
+
+                        try
+                        {
+                            sqlConnection.Open();
+
+                            int i = sqlCommand3.ExecuteNonQuery();
+                            if (i != 1)
+                            {
+                                Console.WriteLine("Insert command shipPos failed");
+                            }
+
+                            return;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            return;
+                        }
+                        finally
+                        {
+                            sqlConnection.Close();
+                        }
+                    }
+                }
+            }
+        }
+
+        public int getShipIdentity(int boardNumber, int boardId, string shipType)
+        {
+            int scalarInt = -1;
+            string boardString = "Board" + boardNumber;
+            string sqlstring = "SELECT " + shipType + " FROM " + boardString + " WHERE (Id) = @boardId";
             SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@board", boardnumber);
-            sqlCommand.Parameters.AddWithValue("@shipListPosition", shipListPosition);
-            sqlCommand.Parameters.AddWithValue("@position", position);
-            sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand.Parameters.AddWithValue("@boardId", boardId);
 
             try
             {
                 sqlConnection.Open();
 
-                int i = sqlCommand.ExecuteNonQuery();
-                if (i != 1)
-                {
-                    Console.WriteLine("Insert command1 failed");
-                }
-                return;
+                object scalar = sqlCommand.ExecuteScalar();
+                scalarInt = Convert.ToInt32(scalar);
+                return scalarInt;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return;
+                return scalarInt;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public Boolean getOccupancyOfShipPos(string shipType, int shipId, string position)
+        {
+            string shipString = shipType + "s";
+            string sqlstring2 = "SELECT (" + position + ") FROM " + shipString + " WHERE (Id) = (@shipId)";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@shipId", shipId);
+            string playerName = "NoName";
+
+            try
+            {
+                sqlConnection.Open();
+
+                object result = sqlCommand2.ExecuteScalar();
+                if (result != DBNull.Value && result != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
             }
             finally
             {
@@ -497,75 +629,31 @@ namespace BattleShits.Models
         /*
          * Kontrollerar om skepp finns
          */
-        public int checkIfEmpty(int boardnumber, int x, int y, string orientation, int length, int gameId)
+        public Boolean checkIfEmpty(int[,] board, string orientation, int length, int x, int y)
         {
-            Boolean occupied = false;
-
-            // Loop through the length of the ship being placed
-            for (int loop = 0; loop < length; loop++)
+            if (orientation == "hor")
             {
-                string position;
-                string sqlstring1;
-
-                // Construct position based on orientation
-                if (orientation == "hor")
+                for (int i = 0; i < length; i++)
                 {
-                    position = "X" + (x + loop) + " Y" + y;
-                    // Dynamically set the table based on boardnumber
-                    sqlstring1 = "SELECT COUNT(*) FROM " + (boardnumber == 1 ? "Board1" : "Board2") +
-                                 " WHERE Position = @position AND Game_Id = @gameId";
-                }
-                else
-                {
-                    position = "X" + x + " Y" + (y + loop);
-                    // Dynamically set the table based on boardnumber
-                    sqlstring1 = "SELECT COUNT(*) FROM " + (boardnumber == 1 ? "Board1" : "Board2") +
-                                 " WHERE Position = @position AND Game_Id = @gameId";
-                }
-
-                SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
-                sqlCommand1.Parameters.AddWithValue("@position", position);
-                sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
-
-                try
-                {
-                    sqlConnection.Open();
-                    int count = (int)sqlCommand1.ExecuteScalar();
-
-                    // If the position exists, it's occupied
-                    if (count > 0)
+                    if (board[x+i,y] == 1)
                     {
-                        occupied = true;
-                    }
-
-                    // Break out of the loop if any position is occupied
-                    if (occupied)
-                    {
-                        break;
+                        return false;
                     }
                 }
-                catch (Exception ex)
+            }
+
+            if (orientation == "vert")
+            {
+                for (int i = 0; i < length; i++)
                 {
-                    // Handle any exceptions (e.g., database connection issues)
-                    Console.WriteLine(ex.Message);
-                }
-                finally
-                {
-                    // Ensure the connection is closed after the query
-                    sqlConnection.Close();
+                    if (board[x + i, y] == 1)
+                    {
+                        return false;
+                    }
                 }
             }
 
-            // If occupied, return 0, else return 1
-            if (occupied)
-            {
-                return 0;
-            }
-            else
-            {
-                return 1;
-            }
-            
+            return true;
         }
 
             /*
@@ -914,31 +1002,42 @@ namespace BattleShits.Models
         public Boolean doesShipExist(int board, int boardNumber, string shipType)
         {
             string boardType = "Board" + boardNumber;
-            string sqlstring2 = "SELECT COUNT(*) FROM " + boardType + " WHERE Id = @board AND " + shipType + " IS NOT NULL";
+            
+            string sqlstring2 = "SELECT * FROM " +boardType+ " WHERE (Id) = @board AND ("+shipType+") IS NOT NULL";
+
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@board", board);
+
             Boolean exists = false;
+            int hits = 0;
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand2);
+            DataSet dataSet = new DataSet();
 
             try
             {
                 sqlConnection.Open();
-                int count = (int)sqlCommand2.ExecuteScalar();
 
-                if (count > 0)
+                sqlDataAdapter.Fill(dataSet, "Ships");
+
+                hits = dataSet.Tables["Ships"].Rows.Count;
+
+                if (hits > 0)
                 {
                     exists = true;
                 }
+
                 return exists;
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Console.WriteLine(ex.Message);
-                return exists;
+                Console.WriteLine(e.Message);
+                return false;
             }
             finally
             {
                 sqlConnection.Close();
             }
+
         }
 
         // Returnerar en lista med strings på alla positioner skeppet har

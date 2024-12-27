@@ -1,6 +1,8 @@
 ﻿using BattleShits.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BattleShits.Controllers
 {
@@ -10,11 +12,30 @@ namespace BattleShits.Controllers
         /*private static BattleField2 battleField = new BattleField2();*/
         private static DatabaseMethods database = new DatabaseMethods();
 
-        public IActionResult AddShipP1()
+        public IActionResult AddShipP1(bool firstStart, int gameNumber)
         {
-            int gameId = database.CreateGame("P1", "P2");
+
+            int gameId = gameNumber;
+            if (firstStart == true)
+            {
+                gameId = database.CreateGame("P1", "P2");
+            }
+            
+            
             int[,] p1Board = database.getBoard(gameId,1);
             string playerName = database.getPlayerNamefromGame(gameId, 1);
+
+            // Check if ships can be blaced
+            bool titanicExists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "Titanic");
+            bool longShip2Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "LongShip2");
+            bool trippleShip3Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "TrippleShip3");
+            bool doubleShip4Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "DoubleShip4");
+            
+            ViewBag.TitanicExists = titanicExists;
+            ViewBag.Longship2Exists = longShip2Exists;
+            ViewBag.Trippleship3Exists = trippleShip3Exists;
+            ViewBag.Doubleship4Exists = doubleShip4Exists;
+
             ViewBag.GameId = gameId;
             ViewBag.PlayerName = playerName;
             ViewBag.p1Board = p1Board;
@@ -76,51 +97,51 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber,x,y,orientation,length,gameId) == 1))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip((x + i), y, gameId, playerNumber);
+                        database.AddShip((x + i), y, gameId, playerNumber, "DoubleShip");
                     }
                 }
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip(x, (y + i), gameId, playerNumber);
+                        database.AddShip(x, (y + i), gameId, playerNumber, "DoubleShip");
                     }
                 }
                 else
                 {
                     ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
                 }
             }
             else
             {
                 ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
             }
 
             if (playerNumber == 1)
             {
 
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
             }
             else
             {
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId)
+        public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId, int[,] board)
         {
             int length = 3;
 
@@ -138,11 +159,11 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber,x,y,orientation,length,gameId) == 1))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip((x + i), y, gameId, playerNumber);
+                        database.AddShip((x + i), y, gameId, playerNumber, "TrippleShip");
                     }
                 }
                 else
@@ -153,11 +174,11 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip(x, (y + i), gameId, playerNumber);
+                        database.AddShip(x, (y + i), gameId, playerNumber, "TrippleShip");
                     }
                 }
                 else
@@ -182,7 +203,7 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId)
+        public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId,int[,] board)
         {
             int length = 4;
 
@@ -190,6 +211,7 @@ namespace BattleShits.Controllers
             if (user == database.getPlayerNamefromGame(gameId, 1))
             {
                 playerNumber = 1;
+                
             }
             if (user == database.getPlayerNamefromGame(gameId, 2))
             {
@@ -200,11 +222,11 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip((x + i), y, gameId, playerNumber);
+                        database.AddShip((x + i), y, gameId, playerNumber, "LongShip");
                     }
                 }
                 else
@@ -215,11 +237,11 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip(x, (y + i), gameId, playerNumber);
+                        database.AddShip(x, (y + i), gameId, playerNumber, "LongShip");
                     }
                 }
                 else
@@ -244,7 +266,7 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId)
+        public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId, int[,] board)
         {
             int length = 5;
 
@@ -262,11 +284,11 @@ namespace BattleShits.Controllers
             int boardSize = 9;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip((x + i), y, gameId, playerNumber);
+                        database.AddShip((x + i), y, gameId, playerNumber, "Titanic");
                     }
                 }
                 else
@@ -277,11 +299,11 @@ namespace BattleShits.Controllers
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(playerNumber, x, y, orientation, length, gameId) == 1))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
-                        database.AddShip(x, (y + i), gameId, playerNumber);
+                        database.AddShip(x, (y + i), gameId, playerNumber, "Titanic");
                     }
                 }
                 else
@@ -337,6 +359,8 @@ namespace BattleShits.Controllers
                 return View("~/Views/Battle2/SeaBattle2.cshtml", battleField);
             }
         }*/
+
+
 
     }
 }

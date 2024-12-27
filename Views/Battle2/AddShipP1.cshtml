@@ -9,11 +9,12 @@
 <p>@ViewBag.Message</p>
 
 <h2>Place the Titanic - 5 slots</h2>
-@if (1 == 1)
+@if (ViewBag.TitanicExists == false)
 {
     <form method="post" asp-action="PlaceTitanic">
         <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
+        <!--<input type="hidden" name="board" value="@ViewBag.p1Board" />-->
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -32,11 +33,12 @@ else
 }
 
 <h2>Place 2 Longships - 4 slots each</h2>
-@if (1 == 1)
+@if (ViewBag.LongShip2Exists == false)
 {
     <form method="post" asp-action="PlaceLongShip">
         <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
+        <!--<input type="hidden" name="board" value="@ViewBag.p1Board" />-->
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -55,11 +57,12 @@ else
 }
 
 <h2>Place 3 Triremes - 3 slots each</h2>
-@if (1 == 1)
+@if (ViewBag.TrippleShip3Exists == false)
 {
     <form method="post" asp-action="PlaceTrippleShip">
         <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
+        <!--<input type="hidden" name="board" value="@ViewBag.p1Board" />-->
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -78,11 +81,12 @@ else
 }
 
 <h2>Place 4 Biremes - 2 slots each</h2>
-@if (1 == 1)
+@if (ViewBag.DoubleShip4Exists == false)
 {
     <form method="post" asp-action="PlaceDoubleShip">
         <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
+        <!--<input type="hidden" name="board" value="@ViewBag.p1Board" />-->
         <label for="orientation">Orientering:</label>
         <select id="orientation" name="orientation" required>
             <option value="hor">Horizontell</option>
@@ -102,12 +106,12 @@ else
 
 <h3>Your ships</h3>
 <table>
-    @for (int i = 0; i < ViewBag.P1Board.GetLength(0); i++)
+    @for (int i = 0; i < 10; i++)
     {
         <tr>
-            @for (int j = 0; j < ViewBag.P1Board.GetLength(1); j++)
+            @for (int j = 0; j < 10; j++)
             {
-                string cellContent = ViewBag.P1Board[i, j] == 1 ? "🚢" : "🌊";
+                string cellContent = @ViewBag.p1Board[i, j] == 1 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>
