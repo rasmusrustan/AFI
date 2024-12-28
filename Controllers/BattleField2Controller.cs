@@ -24,12 +24,18 @@ namespace BattleShits.Controllers
             
             int[,] p1Board = database.getBoard(gameId,1);
             string playerName = database.getPlayerNamefromGame(gameId, 1);
+            bool readyToBattle = false;
 
             // Check if ships can be blaced
             bool titanicExists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "Titanic");
             bool longShip2Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "LongShip2");
             bool trippleShip3Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "TrippleShip3");
             bool doubleShip4Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "DoubleShip4");
+
+            if (titanicExists && longShip2Exists && trippleShip3Exists && doubleShip4Exists)
+            {
+                readyToBattle = true;
+            }
             
             ViewBag.TitanicExists = titanicExists;
             ViewBag.Longship2Exists = longShip2Exists;
@@ -40,6 +46,7 @@ namespace BattleShits.Controllers
             ViewBag.PlayerName = playerName;
             ViewBag.p1Board = p1Board;
             ViewBag.Message = message;
+            ViewBag.readyToBattle = readyToBattle;
             
 
             return View("~/Views/Battle2/AddShipP1.cshtml", database);
@@ -51,12 +58,18 @@ namespace BattleShits.Controllers
 
             int[,] p2Board = database.getBoard(gameId, 2);
             string playerName = database.getPlayerNamefromGame(gameId, 2);
+            bool readyToBattle = false;
 
             // Check if ships can be blaced
             bool titanicExists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "Titanic");
             bool longShip2Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "LongShip2");
             bool trippleShip3Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "TrippleShip3");
             bool doubleShip4Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "DoubleShip4");
+
+            if (titanicExists && longShip2Exists && trippleShip3Exists && doubleShip4Exists)
+            {
+                readyToBattle = true;
+            }
 
             ViewBag.TitanicExists = titanicExists;
             ViewBag.Longship2Exists = longShip2Exists;
@@ -67,7 +80,7 @@ namespace BattleShits.Controllers
             ViewBag.PlayerName = playerName;
             ViewBag.p2Board = p2Board;
             ViewBag.Message = message;
-
+            ViewBag.readyToBattle = readyToBattle;
 
             return View("~/Views/Battle2/AddShipP2.cshtml", database);
         }
