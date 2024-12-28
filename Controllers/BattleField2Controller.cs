@@ -12,7 +12,7 @@ namespace BattleShits.Controllers
         /*private static BattleField2 battleField = new BattleField2();*/
         private static DatabaseMethods database = new DatabaseMethods();
 
-        public IActionResult AddShipP1(bool firstStart, int gameNumber)
+        public IActionResult AddShipP1(bool firstStart, int gameNumber, string message)
         {
 
             int gameId = gameNumber;
@@ -39,6 +39,7 @@ namespace BattleShits.Controllers
             ViewBag.GameId = gameId;
             ViewBag.PlayerName = playerName;
             ViewBag.p1Board = p1Board;
+            ViewBag.Message = message;
             
 
             return View("~/Views/Battle2/AddShipP1.cshtml", database);
@@ -94,7 +95,7 @@ namespace BattleShits.Controllers
             }
 
             // Validera att skeppet kan placeras utan att gå utanför brädet
-            int boardSize = 9;
+            int boardSize = 10;
             if (orientation == "hor")
             {
                 if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
@@ -106,8 +107,8 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
+                    string message = "Ogiltig placering för horizontellt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else if (orientation == "vert")
@@ -121,27 +122,27 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
+                    string message = "Ogiltig placering för vertikalt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else
             {
-                ViewBag.Message = "Ogiltig orientering.";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
+                string message = "Ogiltig orientering.";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
 
             if (playerNumber == 1)
             {
-
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId });
+                string message = "";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
             else
             {
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId, int[,] board)
+        public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId)
         {
             int length = 3;
 
@@ -156,10 +157,10 @@ namespace BattleShits.Controllers
             }
 
             // Validera att skeppet kan placeras utan att gå utanför brädet
-            int boardSize = 9;
+            int boardSize = 10;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -168,13 +169,13 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för horizontellt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -183,27 +184,27 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för vertikalt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else
             {
-                ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "Ogiltig orientering.";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
 
             if (playerNumber == 1)
             {
-
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
             else
             {
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId,int[,] board)
+        public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId)
         {
             int length = 4;
 
@@ -219,10 +220,10 @@ namespace BattleShits.Controllers
             }
 
             // Validera att skeppet kan placeras utan att gå utanför brädet
-            int boardSize = 9;
+            int boardSize = 10;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -231,13 +232,13 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för horizontellt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -246,27 +247,27 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för vertikalt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else
             {
-                ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "Ogiltig orientering.";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
 
             if (playerNumber == 1)
             {
-
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
             else
             {
                 return View("~/Views/Battle2/AddShipP2.cshtml", database);
             }
         }
-        public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId, int[,] board)
+        public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId)
         {
             int length = 5;
 
@@ -281,10 +282,10 @@ namespace BattleShits.Controllers
             }
 
             // Validera att skeppet kan placeras utan att gå utanför brädet
-            int boardSize = 9;
+            int boardSize = 10;
             if (orientation == "hor")
             {
-                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (x >= 0 && x + length - 1 < boardSize && y >= 0 && y < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -293,13 +294,13 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för horizontellt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för horizontellt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else if (orientation == "vert")
             {
-                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(board, orientation, length, x, y)))
+                if (y >= 0 && y + length - 1 < boardSize && x >= 0 && x < boardSize && (database.checkIfEmpty(database.getBoard(gameId, playerNumber), orientation, length, x, y)))
                 {
                     for (int i = 0; i < length; i++)
                     {
@@ -308,20 +309,20 @@ namespace BattleShits.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Ogiltig placering för vertikalt skepp.";
-                    return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                    string message = "Ogiltig placering för vertikalt skepp.";
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
                 }
             }
             else
             {
-                ViewBag.Message = "Ogiltig orientering.";
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "Ogiltig orientering.";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
 
             if (playerNumber == 1)
             {
-
-                return View("~/Views/Battle2/AddShipP1.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
             }
             else
             {

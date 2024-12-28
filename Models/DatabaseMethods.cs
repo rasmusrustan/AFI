@@ -164,7 +164,7 @@ namespace BattleShits.Models
                 numberOfShips = 4;
                 numberOfPositions = 2;
             }
-            if (shipType == "TripleShip")
+            if (shipType == "TrippleShip")
             {
                 numberOfShips = 3;
                 numberOfPositions = 3;
@@ -266,10 +266,11 @@ namespace BattleShits.Models
                     if (!catched)
                     {
                         int shipId = scalarInt;
-                        sqlstring = "UPDATE " + boardnumber + " SET " + shipTypeAndNumber + " = @shipId";
+                        sqlstring = "UPDATE " + boardnumber + " SET " + shipTypeAndNumber + " = @shipId WHERE (Game_Id) = @gameId";
                         SqlCommand sqlCommand3 = new SqlCommand(sqlstring, sqlConnection);
                         sqlCommand3.Parameters.AddWithValue("@shipId", shipId);
-                        
+                        sqlCommand3.Parameters.AddWithValue("@gameId", gameId);
+
 
                         try
                         {
@@ -646,7 +647,7 @@ namespace BattleShits.Models
             {
                 for (int i = 0; i < length; i++)
                 {
-                    if (board[x + i, y] == 1)
+                    if (board[x, y + i] == 1)
                     {
                         return false;
                     }
@@ -1083,17 +1084,16 @@ namespace BattleShits.Models
         public int getShipNumber(int board, int boardNumber, string shipTypeNr)
         {
             string boardType = "Board" + boardNumber;
-            string sqlstring2 = "SELECT (@shipTypeNr) FROM @boardType WHERE (Id) = @board";
+            string sqlstring2 = "SELECT " + shipTypeNr + " FROM " + boardType + " WHERE Id = @board";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
-            sqlCommand2.Parameters.AddWithValue("@shipTypeNr", shipTypeNr);
-            sqlCommand2.Parameters.AddWithValue("@boardType", boardType);
+            
             sqlCommand2.Parameters.AddWithValue("@board", board);
 
             try
             {
                 sqlConnection.Open();
-                SqlDataReader reader = sqlCommand2.ExecuteReader();
-                return reader.GetInt32(0);
+                object number = sqlCommand2.ExecuteScalar();
+                return Convert.ToInt32(number);
             }
             catch (Exception ex)
             {
