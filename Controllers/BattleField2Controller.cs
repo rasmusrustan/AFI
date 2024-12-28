@@ -44,10 +44,30 @@ namespace BattleShits.Controllers
 
             return View("~/Views/Battle2/AddShipP1.cshtml", database);
         }
-        public IActionResult AddShipP2()
+        public IActionResult AddShipP2(bool firstStart, int gameNumber, string message)
         {
-            int gameId = database.CreateGame("P1", "P2");
+
+            int gameId = database.getHighestGameNumber();
+
+            int[,] p2Board = database.getBoard(gameId, 2);
+            string playerName = database.getPlayerNamefromGame(gameId, 2);
+
+            // Check if ships can be blaced
+            bool titanicExists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "Titanic");
+            bool longShip2Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "LongShip2");
+            bool trippleShip3Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "TrippleShip3");
+            bool doubleShip4Exists = database.doesShipExist(database.getBoardNumber(gameId, 2), 2, "DoubleShip4");
+
+            ViewBag.TitanicExists = titanicExists;
+            ViewBag.Longship2Exists = longShip2Exists;
+            ViewBag.Trippleship3Exists = trippleShip3Exists;
+            ViewBag.Doubleship4Exists = doubleShip4Exists;
+
             ViewBag.GameId = gameId;
+            ViewBag.PlayerName = playerName;
+            ViewBag.p2Board = p2Board;
+            ViewBag.Message = message;
+
 
             return View("~/Views/Battle2/AddShipP2.cshtml", database);
         }
@@ -139,7 +159,8 @@ namespace BattleShits.Controllers
             }
             else
             {
-                return View("~/Views/Battle2/AddShipP2.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId)
@@ -201,7 +222,8 @@ namespace BattleShits.Controllers
             }
             else
             {
-                return View("~/Views/Battle2/AddShipP2.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId)
@@ -264,7 +286,8 @@ namespace BattleShits.Controllers
             }
             else
             {
-                return View("~/Views/Battle2/AddShipP2.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId)
@@ -326,7 +349,8 @@ namespace BattleShits.Controllers
             }
             else
             {
-                return View("~/Views/Battle2/AddShipP2.cshtml", database);
+                string message = "";
+                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
             }
         }
         /*

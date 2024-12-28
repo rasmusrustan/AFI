@@ -1105,5 +1105,45 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
         }
+
+        public int getHighestGameNumber()
+        {
+            List<int> numbers = new List<int>();
+            string sqlstring2 = "SELECT (Id) FROM Game";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            int highest = -1;
+
+            try
+            {
+                sqlConnection.Open();
+                using (SqlDataReader reader = sqlCommand2.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            numbers.Add(reader.GetInt32(0));
+                        }
+                    }
+                }
+                for (int i = 0; i < numbers.Count; i++)
+                {
+                    if (numbers[i] > highest)
+                    {
+                        highest = numbers[i];
+                    }
+                }
+                return highest;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return highest;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
     }
 }
