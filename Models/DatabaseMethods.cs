@@ -673,24 +673,30 @@ namespace BattleShits.Models
             sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
             Boolean thereIsAShot = false;
 
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand1);
+            DataSet dataSet1 = new DataSet();
+
             try
             {
                 sqlConnection.Open();
-                int count = (int)sqlCommand1.ExecuteScalar();
 
-                if (count > 0)
+                sqlDataAdapter.Fill(dataSet1, "Shots");
+
+                int shots = dataSet1.Tables["Shots"].Rows.Count;
+
+                if (shots > 0)
                 {
                     thereIsAShot = true;
                 }
+
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                // Handle any exceptions (e.g., database connection issues)
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(e.Message);
+                return -1;
             }
             finally
             {
-                // Ensure the connection is closed after the query
                 sqlConnection.Close();
             }
 
@@ -701,25 +707,30 @@ namespace BattleShits.Models
             sqlCommand2.Parameters.AddWithValue("@position", position);
             sqlCommand2.Parameters.AddWithValue("@playerName", playerName);
             Boolean hit = false;
+            SqlDataAdapter sqlDataAdapter2 = new SqlDataAdapter(sqlCommand2);
+            DataSet dataSet2 = new DataSet();
 
             try
             {
                 sqlConnection.Open();
-                int count = (int)sqlCommand2.ExecuteScalar();
 
-                if (count > 0)
+                sqlDataAdapter.Fill(dataSet2, "Hits");
+
+                int hits = dataSet2.Tables["Hits"].Rows.Count;
+
+                if (hits > 0)
                 {
                     hit = true;
                 }
+
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                // Handle any exceptions (e.g., database connection issues)
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(e.Message);
+                return -1;
             }
             finally
             {
-                // Ensure the connection is closed after the query
                 sqlConnection.Close();
             }
 
@@ -972,6 +983,46 @@ namespace BattleShits.Models
                 }
             }
 
+            // Check all shots and update board
+            int playerNr = 1;
+            if (boardNumber == 1)
+            {
+                playerNr = 2;
+            }
+
+            List<Shot> shots = getShotsFromGame(gameId, playerNr);
+
+            for (int X = 0; X < 10; X++)
+            {
+                for (int Y = 0; Y < 10; Y++)
+                {   
+                    for (int q = 0; q < shots.Count; q++)
+                    {
+                        bool thereIsAShot = false;
+                        bool hit = false;
+                        string position = "X" + X + " Y" + Y;
+
+                        if (shots[q].position == position)
+                        {
+                            thereIsAShot = true;
+                        }
+                        if (shots[q].hit == true)
+                        {
+                            hit = true;
+                        }
+
+                        if (thereIsAShot && hit)
+                        {
+                            board1[X, Y] = 2;
+                        }
+                        if (!hit && thereIsAShot)
+                        {
+                            board1[X,Y] = 3;
+                        }
+                    }
+                }
+            }
+
             return board1;
         }
 
@@ -1144,6 +1195,65 @@ namespace BattleShits.Models
             {
                 sqlConnection.Close();
             }
+        }
+
+        public List<Shot> getShotsFromGame(int gameId, int playerNumber)
+        {
+            List<Shot> shots = new List<Shot>();
+            string playerName = getPlayerNamefromGame(gameId, playerNumber);
+
+            string sqlstring1 = "SELECT (Position), (Player), (Hit) FROM Shots WHERE (Game_Id) = @gameId AND (Player) = @playerName";
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+            sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
+
+            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand1);
+            DataSet dataSet1 = new DataSet();
+
+            try
+            {
+                int i = 0;
+                sqlConnection.Open();
+
+                sqlDataAdapter.Fill(dataSet1, "Shots");
+
+                int count = dataSet1.Tables["Shots"].Rows.Count;
+                if (count > 0)
+                {
+                    while (i < count)
+                    {
+                        Shot shot = new Shot();
+                        shot.position = dataSet1.Tables["Shots"].Rows[i]["Position"].ToString();
+                        shot.player = dataSet1.Tables["Shots"].Rows[i]["Player"].ToString();
+                        if (Convert.ToInt16(dataSet1.Tables["Shots"].Rows[i]["Hit"]) == 1)
+                        {
+                            shot.hit = true;
+                        }
+                        else
+                        {
+                            shot.hit = false;
+                        }
+
+                        i++;
+                        shots.Add(shot);
+                    }
+                }
+                return shots;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return shots;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public List<Shot> updateSunkenShips(List<Shot> shots, int boardNr, int gameId)
+        {
+
         }
     }
 }
