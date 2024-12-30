@@ -9,12 +9,12 @@
 
 <h3>Ditt bräde</h3>
 <table>
-    @for (int i = 0; i < Model.P1Board.GetLength(0); i++)
+    @for (int i = 0; i < ViewBag.p1Board.GetLength(0); i++)
     {
         <tr>
-            @for (int j = 0; j < Model.P1Board.GetLength(1); j++)
+            @for (int j = 0; j < ViewBag.p1Board.GetLength(1); j++)
             {
-                string cellContent = Model.P1Board[i, j] == 1 ? "🚢" : "🌊";
+                string cellContent = ViewBag.p1Board[i, j] == 1 ? "🚢" : "🌊";
                 <td>@cellContent</td>
             }
         </tr>
@@ -23,13 +23,13 @@
 
 <h3>Här skjuter du!</h3>
 <table>
-    @for (int i = 0; i < Model.P2Board.GetLength(0); i++)
+    @for (int i = 0; i < ViewBag.p2Board.GetLength(0); i++)
     {
         <tr>
-            @for (int j = 0; j < Model.P2Board.GetLength(1); j++)
+            @for (int j = 0; j < ViewBag.p2Board.GetLength(1); j++)
             {
                 <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
-                    @if (Model.P2Board[i, j] == 3)
+                    @if (ViewBag.p2Board[i, j] == 3)
                     {
                         <span>💧</span>
                         // Vatten

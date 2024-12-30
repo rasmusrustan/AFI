@@ -1022,6 +1022,19 @@ namespace BattleShits.Models
                     }
                 }
             }
+            /*
+            // Check sunken ships and update board
+            List<string> sunkenShots = updateSunkenShips(shots, boardNumber, gameId);
+            for (int i = 0; i < sunkenShots.Count; i++)
+            {
+                string positionString = sunkenShots[i];
+                string[] split = positionString.Split(' ');
+
+                int x = int.Parse(split[0].Substring(1));
+                int y = int.Parse(split[1].Substring(1));
+
+                board1[x, y] = 4;
+            }*/
 
             return board1;
         }
@@ -1251,9 +1264,380 @@ namespace BattleShits.Models
             }
         }
 
-        public List<Shot> updateSunkenShips(List<Shot> shots, int boardNr, int gameId)
+        // Returnerar en lista med skott som är på ett sänkt skepp
+        public List<string> updateSunkenShips(List<Shot> shots, int boardNr, int gameId)
         {
+            int playerNr = 1;
+            if (boardNr == 1)
+            {
+                playerNr = 2;
+            }
 
+            Titanic titanic = new Titanic();
+
+            LongShip longShip1 = new LongShip();
+            LongShip longShip2 = new LongShip();
+
+            TrippleShip trippleShip1 = new TrippleShip();
+            TrippleShip trippleShip2 = new TrippleShip();
+            TrippleShip trippleShip3 = new TrippleShip();
+
+            DoubleShip doubleShip1 = new DoubleShip();
+            DoubleShip doubleShip2 = new DoubleShip();
+            DoubleShip doubleShip3 = new DoubleShip();
+            DoubleShip doubleShip4 = new DoubleShip();
+
+            List<string> sunkenShots = new List<string>();
+            string playerName = getPlayerNamefromGame(gameId, playerNr);
+            int shipSize = 0;
+            string shipStringName = "";
+            string shipStringNameAndNumber = "";
+
+            for (int allShips = 0; allShips < 10; allShips++)
+            {
+                if (allShips == 0)
+                {
+                    shipSize = 5;
+                    shipStringName = "Titanic";
+                    shipStringNameAndNumber = "Titanic";
+                }
+                if (allShips == 1)
+                {
+                    shipSize = 4;
+                    shipStringName = "LongShip";
+                    shipStringNameAndNumber = "LongShip1";
+                }
+                if (allShips == 2)
+                {
+                    shipSize = 4;
+                    shipStringName = "LongShip";
+                    shipStringNameAndNumber = "LongShip2";
+                }
+                if (allShips == 3)
+                {
+                    shipSize = 3;
+                    shipStringName = "TrippleShip";
+                    shipStringNameAndNumber = "TrippleShip1";
+                }
+                if (allShips == 4)
+                {
+                    shipSize = 3;
+                    shipStringName = "TrippleShip";
+                    shipStringNameAndNumber = "TrippleShip2";
+                }
+                if (allShips == 5)
+                {
+                    shipSize = 3;
+                    shipStringName = "TrippleShip";
+                    shipStringNameAndNumber = "TrippleShip3";
+                }
+                if (allShips == 6)
+                {
+                    shipSize = 2;
+                    shipStringName = "DoubleShip";
+                    shipStringNameAndNumber = "DoubleShip1";
+                }
+                if (allShips == 7)
+                {
+                    shipSize = 2;
+                    shipStringName = "DoubleShip";
+                    shipStringNameAndNumber = "DoubleShip2";
+                }
+                if (allShips == 8)
+                {
+                    shipSize = 2;
+                    shipStringName = "DoubleShip";
+                    shipStringNameAndNumber = "DoubleShip3";
+                }
+                if (allShips == 9)
+                {
+                    shipSize = 2;
+                    shipStringName = "DoubleShip";
+                    shipStringNameAndNumber = "DoubleShip4";
+                }
+
+                if (doesShipExist(getBoardNumberFromBoards(boardNr, playerNr), boardNr, shipStringNameAndNumber))
+                {
+                    int shipId = getShipNumber(getBoardNumber(gameId, boardNr), boardNr, shipStringName);
+                    List<string> shipPositions = getShipPositions(shipId, shipStringName);
+                    int shotsOnShip = 0;
+
+                    if (shipStringNameAndNumber == "Titanic")
+                    {
+                        titanic.position1 = shipPositions[0];
+                        titanic.position2 = shipPositions[1];
+                        titanic.position3 = shipPositions[2];
+                        titanic.position4 = shipPositions[3];
+                        titanic.position5 = shipPositions[4];
+                    }
+
+                    if (shipStringNameAndNumber == "LongShip1")
+                    {
+                        longShip1.position1 = shipPositions[0];
+                        longShip1.position2 = shipPositions[1];
+                        longShip1.position3 = shipPositions[2];
+                        longShip1.position4 = shipPositions[3];
+                    }
+
+                    if (shipStringNameAndNumber == "LongShip2")
+                    {
+                        longShip2.position1 = shipPositions[0];
+                        longShip2.position2 = shipPositions[1];
+                        longShip2.position3 = shipPositions[2];
+                        longShip2.position4 = shipPositions[3];
+                    }
+
+                    if (shipStringNameAndNumber == "TrippleShip1")
+                    {
+                        trippleShip1.position1 = shipPositions[0];
+                        trippleShip1.position2 = shipPositions[1];
+                        trippleShip1.position3 = shipPositions[2];
+                    }
+
+                    if (shipStringNameAndNumber == "TrippleShip2")
+                    {
+                        trippleShip2.position1 = shipPositions[0];
+                        trippleShip2.position2 = shipPositions[1];
+                        trippleShip2.position3 = shipPositions[2];
+                    }
+
+                    if (shipStringNameAndNumber == "TrippleShip3")
+                    {
+                        trippleShip3.position1 = shipPositions[0];
+                        trippleShip3.position2 = shipPositions[1];
+                        trippleShip3.position3 = shipPositions[2];
+                    }
+
+                    if (shipStringNameAndNumber == "DoubleShip1")
+                    {
+                        doubleShip1.position1 = shipPositions[0];
+                        doubleShip1.position2 = shipPositions[1];
+                    }
+
+                    if (shipStringNameAndNumber == "DoubleShip2")
+                    {
+                        doubleShip2.position1 = shipPositions[0];
+                        doubleShip2.position2 = shipPositions[1];
+                    }
+
+                    if (shipStringNameAndNumber == "DoubleShip3")
+                    {
+                        doubleShip3.position1 = shipPositions[0];
+                        doubleShip3.position2 = shipPositions[1];
+                    }
+
+                    if (shipStringNameAndNumber == "DoubleShip4")
+                    {
+                        doubleShip4.position1 = shipPositions[0];
+                        doubleShip4.position2 = shipPositions[1];
+                    }
+
+                    for (int i = 0; i < shipPositions.Count; i++)
+                    {
+                        for (int j = 0; j < shots.Count; j++)
+                        {
+                            if (shots[j].position == shipPositions[i])
+                            {
+                                shotsOnShip++;
+                            }
+                        }
+                    }
+                    if (shotsOnShip == shipSize)
+                    {
+                        if (allShips == 0)
+                        {
+                            titanic.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 1)
+                        {
+                            longShip1.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 2)
+                        {
+                            longShip2.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 3)
+                        {
+                            trippleShip1.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 4)
+                        {
+                            trippleShip2.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 5)
+                        {
+                            trippleShip3.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 6)
+                        {
+                            doubleShip1.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 7)
+                        {
+                            doubleShip2.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 8)
+                        {
+                            doubleShip3.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                        if (allShips == 9)
+                        {
+                            doubleShip4.sunk = true;
+                            for (int add = 0; add < shipSize; add++)
+                            {
+                                sunkenShots.Add(shipPositions[add]);
+                            }
+                        }
+                    }
+                }
+            }
+            return sunkenShots;
+        }
+
+
+        // Kontrollerar om bägge bräden har alla skepp
+        public bool isGameSetup(int gameId)
+        {
+            bool board1Ready = false;
+            bool board2Ready = false;
+            string sqlstring1 = "SELECT (Id) FROM Game WHERE (Id) = @gameId AND ISNULL(Board1Ready, 0) = 1";
+
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+
+            SqlDataAdapter sqlDataAdapter1 = new SqlDataAdapter(sqlCommand1);
+            DataSet dataSet1 = new DataSet();
+
+            try
+            {
+                sqlConnection.Open();
+
+                sqlDataAdapter1.Fill(dataSet1, "Board1Ready");
+
+                int ready1 = dataSet1.Tables["Board1Ready"].Rows.Count;
+
+                if (ready1 > 0)
+                {
+                    board1Ready = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            string sqlstring2 = "SELECT (Id) FROM Game WHERE (Id) = @gameId AND ISNULL(Board2Ready, 0) = 1";
+
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+
+            SqlDataAdapter sqlDataAdapter2 = new SqlDataAdapter(sqlCommand2);
+            DataSet dataSet2 = new DataSet();
+
+            try
+            {
+                sqlConnection.Open();
+
+                sqlDataAdapter2.Fill(dataSet2, "Board2Ready");
+
+                int ready2 = dataSet2.Tables["Board2Ready"].Rows.Count;
+
+                if (ready2 > 0)
+                {
+                    board2Ready = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            if (board1Ready && board2Ready)
+            {
+                return true;
+            }
+            else 
+            { 
+                return false;
+            }
+        }
+
+        // Uppdaterar i tabellen Game att ett bräde har alla skepp
+        public void updateBoardReady(int gameId, int boardNr)
+        {
+            string boardString = "Board" + boardNr + "Ready";
+
+            string sqlstring2 = "UPDATE Game SET " + boardString + " = 1 WHERE (Id) = @gameId";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+
+            try
+            {
+                sqlConnection.Open();
+
+                int j = sqlCommand2.ExecuteNonQuery();
+                if (j != 1)
+                {
+                    Console.WriteLine("Update command BoardNrReady failed");
+                }
+
+                return;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
         }
     }
 }

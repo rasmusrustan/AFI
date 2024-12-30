@@ -118,15 +118,31 @@ else
     }
 </table>
 
-@if (ViewBag.readyToBattle == true) 
+@if (ViewBag.readyToBattle == true)
 {
     <div style="text-align: center; margin-top: 20px;">
 
 
         <a asp-action="SeaBattle" asp-controller="BattleField2"
-        asp-route-gameId="@ViewBag.gameId"
-        asp-route-boardNumber="@ViewBag.boardNumber"
-        class="btn btn-primary">Ready to battle!</a>
+           asp-route-gameId="@ViewBag.gameId"
+           asp-route-boardNumber="@ViewBag.boardNumber"
+           class="btn btn-primary">Ready to battle!</a>
+
+
+    </div>
+}
+
+else
+{
+    <p>Spelare 1 ej ännu färdig</p>
+    <div style="text-align: center; margin-top: 20px;">
+
+
+        <a asp-action="AddShipP2" asp-controller="BattleField2"
+           asp-route-firsStart="false"
+           asp-route-gameNumber="@ViewBag.gameId"
+           asp-route-message=""
+           class="btn btn-primary">Uppdatera</a>
 
 
     </div>

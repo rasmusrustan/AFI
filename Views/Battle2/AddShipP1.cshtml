@@ -131,3 +131,19 @@ else
 
     </div>
 }
+
+else 
+{
+    <p>Spelare 2 ej ännu färdig</p>
+    <div style="text-align: center; margin-top: 20px;">
+
+
+        <a asp-action="AddShipP1" asp-controller="BattleField2"
+        asp-route-firsStart="false"
+        asp-route-gameNumber="@ViewBag.gameId"
+        asp-route-message=""
+        class="btn btn-primary">Uppdatera</a>
+
+
+    </div>
+}

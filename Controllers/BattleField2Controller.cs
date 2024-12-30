@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
+
 namespace BattleShits.Controllers
 {
     [AllowAnonymous]
@@ -11,6 +12,10 @@ namespace BattleShits.Controllers
     {
         /*private static BattleField2 battleField = new BattleField2();*/
         private static DatabaseMethods database = new DatabaseMethods();
+        
+
+        
+        
 
         public IActionResult AddShipP1(bool firstStart, int gameNumber, string message)
         {
@@ -32,11 +37,15 @@ namespace BattleShits.Controllers
             bool trippleShip3Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "TrippleShip3");
             bool doubleShip4Exists = database.doesShipExist(database.getBoardNumber(gameId, 1), 1, "DoubleShip4");
 
+            
+
             if (titanicExists && longShip2Exists && trippleShip3Exists && doubleShip4Exists)
             {
-                readyToBattle = true;
+                database.updateBoardReady(gameId, 1);
             }
-            
+
+            readyToBattle = database.isGameSetup(gameId);
+
             ViewBag.TitanicExists = titanicExists;
             ViewBag.Longship2Exists = longShip2Exists;
             ViewBag.Trippleship3Exists = trippleShip3Exists;
@@ -68,8 +77,10 @@ namespace BattleShits.Controllers
 
             if (titanicExists && longShip2Exists && trippleShip3Exists && doubleShip4Exists)
             {
-                readyToBattle = true;
+                database.updateBoardReady(gameId, 2);
             }
+
+            readyToBattle = database.isGameSetup(gameId);
 
             ViewBag.TitanicExists = titanicExists;
             ViewBag.Longship2Exists = longShip2Exists;
@@ -87,13 +98,13 @@ namespace BattleShits.Controllers
 
         public IActionResult SeaBattle(int gameId, int boardNumber)
         {
-            ViewBag.boardNumber = boardNumber;
-            ViewBag.gameId = gameId;
-            ViewBag.boardNumber2 = 2;
-            if (boardNumber == 2)
-            {
-                ViewBag.boardNumber2 = 1;
-            }
+            int[,] p1Board = database.getBoard(gameId, 1);
+            int[,] p2Board = database.getBoard(gameId, 2);
+
+            ViewBag.p1Board = p1Board;
+            ViewBag.p2Board = p2Board;
+
+
             return View("~/Views/Battle2/SeaBattle.cshtml", database);
         }
         public IActionResult SeaBattle2(int gameId, int boardNumber)
@@ -366,6 +377,8 @@ namespace BattleShits.Controllers
                 return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
             }
         }
+
+
         /*
         public IActionResult Fire(string user, int x, int y)
         {
