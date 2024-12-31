@@ -96,13 +96,15 @@ namespace BattleShits.Controllers
             return View("~/Views/Battle2/AddShipP2.cshtml", database);
         }
 
-        public IActionResult SeaBattle(int gameId, int boardNumber)
+        public IActionResult SeaBattle(int gameId, string message)
         {
             int[,] p1Board = database.getBoard(gameId, 1);
             int[,] p2Board = database.getBoard(gameId, 2);
 
             ViewBag.p1Board = p1Board;
             ViewBag.p2Board = p2Board;
+            ViewBag.message = message;
+            ViewBag.gameId = gameId;
 
 
             return View("~/Views/Battle2/SeaBattle.cshtml", database);
@@ -379,13 +381,16 @@ namespace BattleShits.Controllers
         }
 
 
-        /*
-        public IActionResult Fire(string user, int x, int y)
+        
+        public IActionResult Fire(int playerNumber, int x, int y, int gameNumber)
         {
-            // Användarens skott
-            bool hit = battleField.Shoot(user, x, y);
-            ViewBag.Message = hit ? "Träff!" : "Miss!";
+            string message = "";
 
+            // Användarens skott
+            bool hit = database.Shoot(x, y, playerNumber, gameNumber);
+            message = hit ? "Träff!" : "Miss!";
+
+            /*
             // Kontrollera om spelet är över efter användarens skott
             if (battleField.AreAllP2ShipsSunk())
             {
@@ -399,17 +404,17 @@ namespace BattleShits.Controllers
                 ViewBag.Message += " Alla spelare 1's skepp är sänkta! Spelare 2 vinner!";
                 return View("~/Views/Battle2/Result.cshtml", battleField);
             }
+            */
 
-            if (user == "P1")
+            if (playerNumber == 1)
             {
-
-                return View("~/Views/Battle2/SeaBattle.cshtml", battleField);
+                return RedirectToAction("SeaBattle", new { gameId = gameNumber, message = message });
             }
             else
             {
-                return View("~/Views/Battle2/SeaBattle2.cshtml", battleField);
+                return RedirectToAction("SeaBattle2", new { gameId = gameNumber, message = message });
             }
-        }*/
+        }
 
 
 

@@ -365,18 +365,17 @@ namespace BattleShits.Models
         public Boolean Shoot(int x, int y, int playerNumber, int gameId)
         {
             string position = "X" + x + " " + "Y" + y;
+            string boardString = "Board" + 2;
+            if (playerNumber == 2)
+            {
+                boardString = "Board" + 1;
+            }
+            
 
-            string sqlstring1 = "SELECT * FROM @board WHERE (Position) = @position AND (Game_Id) = @gameId";
+            string sqlstring1 = "SELECT * FROM " + boardString + " WHERE (Position) = @position AND (Game_Id) = @gameId";
 
             SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
-            if (playerNumber == 1)
-            {
-                sqlCommand1.Parameters.AddWithValue("@board", "Board1");
-            }
-            else
-            {
-                sqlCommand1.Parameters.AddWithValue("@board", "Board2");
-            }
+        
             sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand1.Parameters.AddWithValue("@position", position);
             Boolean hit = false;
@@ -1022,7 +1021,7 @@ namespace BattleShits.Models
                     }
                 }
             }
-            /*
+            
             // Check sunken ships and update board
             List<string> sunkenShots = updateSunkenShips(shots, boardNumber, gameId);
             for (int i = 0; i < sunkenShots.Count; i++)
@@ -1034,7 +1033,7 @@ namespace BattleShits.Models
                 int y = int.Parse(split[1].Substring(1));
 
                 board1[x, y] = 4;
-            }*/
+            }
 
             return board1;
         }
@@ -1356,9 +1355,9 @@ namespace BattleShits.Models
                     shipStringNameAndNumber = "DoubleShip4";
                 }
 
-                if (doesShipExist(getBoardNumberFromBoards(boardNr, playerNr), boardNr, shipStringNameAndNumber))
+                if (doesShipExist(getBoardNumberFromBoards(boardNr, gameId), boardNr, shipStringNameAndNumber))
                 {
-                    int shipId = getShipNumber(getBoardNumber(gameId, boardNr), boardNr, shipStringName);
+                    int shipId = getShipNumber(getBoardNumber(gameId, boardNr), boardNr, shipStringNameAndNumber);
                     List<string> shipPositions = getShipPositions(shipId, shipStringName);
                     int shotsOnShip = 0;
 

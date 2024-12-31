@@ -1,21 +1,47 @@
-﻿@model BattleShits.Models.DatabaseMethods;
+﻿@model BattleShits.Models.DatabaseMethods
 
 @{
     ViewData["Title"] = "SeaBattle";
 }
 <p>Spelare 1's stridsvy!</p>
-<p>@ViewBag.Message</p>
+<p>@ViewBag.message</p>
 
 
 <h3>Ditt bräde</h3>
 <table>
-    @for (int i = 0; i < 10; i++)
+    @for (int i = 0; i < ViewBag.p1Board.GetLength(0); i++)
     {
         <tr>
-            @for (int j = 0; j < 10; j++)
+            @for (int j = 0; j < ViewBag.p1Board.GetLength(1); j++)
             {
-                /*string cellContent = @Model.checkIfEmpty(ViewBag.boardNumber, i, j, "hor", 1, ViewBag.gameId) == 0 ? "🚢" : "🌊";
-                <td>@cellContent</td>*/
+                <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
+                    @if (ViewBag.p1Board[j, i] == 3)
+                    {
+                        <span>💧</span>
+                        // Vatten
+                    }
+
+                    else if (ViewBag.p1Board[j, i] == 2)
+                    {
+                        <span>🔥</span>
+                        // Träff
+                    }
+                    else if (ViewBag.p1Board[j, i] == 1)
+                    {
+                        <span>🚢</span>
+                        // Miss
+                    }
+                    else if (ViewBag.p1Board[j, i] == 4)
+                    {
+                        <span>🔴</span>
+                        // Sänkt skepp
+                    }
+                    else
+                    {
+                        <span>🌊</span>
+                        // Skepp
+                    }
+                </td>
             }
         </tr>
     }
@@ -23,27 +49,37 @@
 
 <h3>Här skjuter du!</h3>
 <table>
-    @for (int i = 0; i < 10; i++)
+    @for (int i = 0; i < ViewBag.p2Board.GetLength(0); i++)
     {
         <tr>
-            @for (int j = 0; j < 10; j++)
+            @for (int j = 0; j < ViewBag.p2Board.GetLength(1); j++)
             {
                 <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
-                    @if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 3)
+                    @if (ViewBag.p2Board[j, i] == 3)
                     {
                         <span>💧</span>
-                        // Miss
+                        // Vatten
                     }
 
-                    else if (@Model.checkShots(ViewBag.boardNumber, ViewBag.gameId, i, j) == 2)
+                    else if (ViewBag.p2Board[j, i] == 2)
                     {
                         <span>🔥</span>
                         // Träff
                     }
+                    else if (ViewBag.p2Board[j, i] == 1)
+                    {
+                        <span>🌊</span>
+                        // Miss
+                    }
+                    else if (ViewBag.p1Board[j, i] == 4)
+                    {
+                        <span>🔴</span>
+                        // Sänkt skepp
+                    }
                     else
                     {
                         <span>🌊</span>
-                        // Vatten
+                        // Skepp
                     }
                 </td>
             }
@@ -52,13 +88,11 @@
 </table>
 
 <form method="post" asp-action="Fire">
-    <input type="hidden" name="user" value="@Model.getPlayerNamefromGame(ViewBag.gameId, ViewBag.boardNumber)" />
-
+    <input type="hidden" name="playerNumber" value="1" />
+    <input type="hidden" name="gameNumber" value="@ViewBag.gameId" />
     <label for="x">Koordinat x:</label>
     <input type="number" id="x" name="x" min="0" max="9" />
-
     <label for="y">Koordinat Y:</label>
     <input type="number" id="y" name="y" min="0" max="9" />
-
     <button type="submit">Skjut</button>
 </form>
