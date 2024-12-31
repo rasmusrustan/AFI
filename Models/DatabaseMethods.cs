@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.FileSystemGlobbing;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Linq.Expressions;
@@ -25,6 +26,7 @@ namespace BattleShits.Models
          * Skapar spel och returnerar det skapade id:t
          * Stoppar även in spelare i spelet
          * Skapar även spelbräde med skepp
+         * Returnerar Id för det skapade spelet
          */
         public int CreateGame(string Player1, string Player2)
         {
@@ -360,34 +362,36 @@ namespace BattleShits.Models
         }
 
         /*
-         * Skjutförfarande, returnerar true/false på träff
+         * Skjutförfarande, lägger in skott i shots tabellen
          */
-        public Boolean Shoot(int x, int y, int playerNumber, int gameId)
+        public void Shoot(int x, int y, int playerNumber, int gameId, bool hit)
         {
             string position = "X" + x + " " + "Y" + y;
-            string boardString = "Board" + 2;
-            if (playerNumber == 2)
+            string playerName = getPlayerNamefromGame(gameId, playerNumber);
+            int hitt = 0;
+            if (hit)
             {
-                boardString = "Board" + 1;
+                hitt = 1;
             }
-            
 
-            string sqlstring1 = "SELECT * FROM " + boardString + " WHERE (Position) = @position AND (Game_Id) = @gameId";
+            string sqlstring1 = "INSERT INTO [Shots] ([Game_Id], [Player], [Position], [Hit]) VALUES (@gameId, @playerName, @position, @hitt)";
 
             SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
         
             sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand1.Parameters.AddWithValue("@position", position);
-            Boolean hit = false;
+            sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
+            sqlCommand1.Parameters.AddWithValue("@hitt", hitt);
+
 
             try
             {
                 sqlConnection.Open();
-                int count = (int)sqlCommand1.ExecuteScalar();
+                int count = sqlCommand1.ExecuteNonQuery();
 
-                if (count > 0)
+                if (count < 1)
                 {
-                    hit = true; // If the position exists, it's a hit
+                    Console.WriteLine("Insert shot failed");
                 }
             }
             catch (Exception ex)
@@ -401,43 +405,6 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
 
-            string playerName = getPlayerNamefromGame(gameId, playerNumber);
-            int hit2 = 0;
-            if (hit)
-            {
-                hit2 = 1;
-            }
-            string sqlstring2 = "INSERT INTO Shots (Game_Id, Player, Position, Hit) VALUES (@gameId, @playerName, @position, @hitt)";
-            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
-            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
-            sqlCommand2.Parameters.AddWithValue("@position", position);
-            sqlCommand2.Parameters.AddWithValue("@playerName", playerName);
-            sqlCommand2.Parameters.AddWithValue("@hitt", hit2);
-
-            try
-            {
-                sqlConnection.Open();
-
-                int i = sqlCommand2.ExecuteNonQuery();
-                if (i != 1)
-                {
-                    Console.WriteLine("Insert command to Shots failed");
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                sqlConnection.Close();
-            }
-
-            if (!hit) // Uppdatera nextplayer om miss
-            {
-                updateNextPlayer(gameId);
-            }
-            return hit;
         }
 
         /*

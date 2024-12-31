@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -105,6 +106,7 @@ namespace BattleShits.Controllers
             ViewBag.p2Board = p2Board;
             ViewBag.message = message;
             ViewBag.gameId = gameId;
+            ViewBag.p2BoardJson = JsonConvert.SerializeObject(p2Board);
 
 
             return View("~/Views/Battle2/SeaBattle.cshtml", database);
@@ -154,7 +156,14 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för horizontellt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else if (orientation == "vert")
@@ -169,13 +178,27 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för vertikalt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else
             {
                 string message = "Ogiltig orientering.";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                if (playerNumber == 1)
+                {
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                }
+                else
+                {
+                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                }
             }
 
             if (playerNumber == 1)
@@ -217,7 +240,14 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för horizontellt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else if (orientation == "vert")
@@ -232,13 +262,27 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för vertikalt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else
             {
                 string message = "Ogiltig orientering.";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                if (playerNumber == 1)
+                {
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                }
+                else
+                {
+                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                }
             }
 
             if (playerNumber == 1)
@@ -281,7 +325,14 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för horizontellt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else if (orientation == "vert")
@@ -296,13 +347,27 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för vertikalt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else
             {
                 string message = "Ogiltig orientering.";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                if (playerNumber == 1)
+                {
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                }
+                else
+                {
+                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                }
             }
 
             if (playerNumber == 1)
@@ -344,7 +409,14 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för horizontellt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else if (orientation == "vert")
@@ -359,13 +431,27 @@ namespace BattleShits.Controllers
                 else
                 {
                     string message = "Ogiltig placering för vertikalt skepp.";
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    if (playerNumber == 1)
+                    {
+                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
+                    else
+                    {
+                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    }
                 }
             }
             else
             {
                 string message = "Ogiltig orientering.";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                if (playerNumber == 1)
+                {
+                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                }
+                else
+                {
+                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                }
             }
 
             if (playerNumber == 1)
@@ -382,29 +468,42 @@ namespace BattleShits.Controllers
 
 
         
-        public IActionResult Fire(int playerNumber, int x, int y, int gameNumber)
+        public IActionResult Fire(int playerNumber, int x, int y, int gameNumber, string boardString)
         {
             string message = "";
+            bool newShot = false;
+            bool hit = false;
+            int[,] board = JsonConvert.DeserializeObject<int[,]>(boardString);
 
-            // Användarens skott
-            bool hit = database.Shoot(x, y, playerNumber, gameNumber);
-            message = hit ? "Träff!" : "Miss!";
-
-            /*
-            // Kontrollera om spelet är över efter användarens skott
-            if (battleField.AreAllP2ShipsSunk())
+            // Kontrollera om nytt skott och om träff
+            if (board[x,y] == 1)
             {
-                ViewBag.Message += " Alla Spealre 2's skepp är sänkta! Spelare 1 vinner!";
-                return View("~/Views/Battle2/Result.cshtml", database);
+                // träff
+                message = "TRÄFF!!";
+                newShot = true;
+                hit = true;
+            }
+            else if ((board[x, y] == 2) || (board[x, y] == 3) || (board[x, y] == 4))
+            {
+                // Finns redan skott där
+                message = "Det finns redan ett skott där";
+            }
+            else
+            {
+                // Miss
+                message = "miss";
+                newShot = true;
             }
 
-
-            if (battleField.AreAllP1ShipsSunk())
+            // Lägger till skott i databasen och uppdaterar eventuellt nextPlayer
+            if (newShot)
             {
-                ViewBag.Message += " Alla spelare 1's skepp är sänkta! Spelare 2 vinner!";
-                return View("~/Views/Battle2/Result.cshtml", battleField);
+                database.Shoot(x, y, playerNumber, gameNumber, hit);
+                if (!hit)
+                {
+                    database.updateNextPlayer(gameNumber);
+                }
             }
-            */
 
             if (playerNumber == 1)
             {
@@ -415,8 +514,6 @@ namespace BattleShits.Controllers
                 return RedirectToAction("SeaBattle2", new { gameId = gameNumber, message = message });
             }
         }
-
-
 
     }
 }
