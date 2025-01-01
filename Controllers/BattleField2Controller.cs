@@ -97,7 +97,7 @@ namespace BattleShits.Controllers
             return View("~/Views/Battle2/AddShipP2.cshtml", database);
         }
 
-        public IActionResult SeaBattle(int gameId, string message)
+        public IActionResult SeaBattle(int gameId, string message, bool gameOver)
         {
             int[,] p1Board = database.getBoard(gameId, 1);
             int[,] p2Board = database.getBoard(gameId, 2);
@@ -109,19 +109,26 @@ namespace BattleShits.Controllers
             ViewBag.gameId = gameId;
             ViewBag.p2BoardJson = JsonConvert.SerializeObject(p2Board);
             ViewBag.nextPlayer = nextPlayer;
+            ViewBag.gameOver = gameOver;
 
 
             return View("~/Views/Battle2/SeaBattle.cshtml", database);
         }
-        public IActionResult SeaBattle2(int gameId, int boardNumber)
+        public IActionResult SeaBattle2(int gameId, string message, bool gameOver)
         {
-            ViewBag.boardNumber = boardNumber;
+            int[,] p1Board = database.getBoard(gameId, 1);
+            int[,] p2Board = database.getBoard(gameId, 2);
+            int nextPlayer = database.getNextPlayer(gameId);
+
+            ViewBag.p1Board = p1Board;
+            ViewBag.p2Board = p2Board;
+            ViewBag.message = message;
             ViewBag.gameId = gameId;
-            ViewBag.boardNumber2 = 2;
-            if (boardNumber == 2)
-            {
-                ViewBag.boardNumber2 = 1;
-            }
+            ViewBag.p1BoardJson = JsonConvert.SerializeObject(p1Board);
+            ViewBag.nextPlayer = nextPlayer;
+            ViewBag.gameOver = gameOver;
+
+
             return View("~/Views/Battle2/SeaBattle2.cshtml", database);
         }
         public IActionResult Result()
@@ -507,13 +514,36 @@ namespace BattleShits.Controllers
                 }
             }
 
+            // Kontrollera om alla motståndarskepp är sänkta
+            bool gameOver = false;
+            if (hit)
+            {
+                if (playerNumber == 1)
+                {
+                    board = database.getBoard(gameNumber, 2);
+                }
+                else
+                {
+                    board = database.getBoard(gameNumber, 1);
+                }
+                gameOver = database.areAllShipsSunk(board);
+            }
+
+            // Deklarera vinnare om alla skepp är sänkta
+            if (gameOver)
+            {
+                string playerName = database.getPlayerNamefromGame(gameNumber, playerNumber);
+                database.declareWinner(gameNumber, playerName);
+            }
+            
+
             if (playerNumber == 1)
             {
-                return RedirectToAction("SeaBattle", new { gameId = gameNumber, message = message });
+                return RedirectToAction("SeaBattle", new { gameId = gameNumber, message = message, gameOver = gameOver });
             }
             else
             {
-                return RedirectToAction("SeaBattle2", new { gameId = gameNumber, message = message });
+                return RedirectToAction("SeaBattle2", new { gameId = gameNumber, message = message, gameOver = gameOver });
             }
         }
 

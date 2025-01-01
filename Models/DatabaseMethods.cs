@@ -486,12 +486,12 @@ namespace BattleShits.Models
          */
         public void declareWinner(int gameId, string playerName)
         {
-            string sqlstring1 = "UPDATE Game SET (Winner) = @playerName WHERE (Game_Id) = @gameId";
+            string sqlstring1 = "UPDATE Game SET Winner = @playerName WHERE Id = @gameId";
             SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
             sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
 
-            string sqlstring2 = "UPDATE Game SET (GameFinished) = 1 WHERE (Game_Id) = @gameId";
+            string sqlstring2 = "UPDATE Game SET GameFinished = 1 WHERE Id = @gameId";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
 
@@ -1604,6 +1604,24 @@ namespace BattleShits.Models
             {
                 sqlConnection.Close();
             }
+        }
+
+        // Kontrollerar om alla skepp är sänkta på ett bräde, returnerar true/false
+        public bool areAllShipsSunk(int[,] board)
+        {
+            int sunkenShips = 0;
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
+                {
+                    if (board[i, j] == 4)
+                    {
+                        sunkenShips++;
+                    }
+                }
+            }
+
+            return (sunkenShips == 30);
         }
     }
 }
