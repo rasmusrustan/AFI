@@ -539,7 +539,7 @@ namespace BattleShits.Models
                 nextPlayer = 1;
             }
 
-            string sqlstring2 = "UPDATE Game SET (NextPlayer) = @nextPlayer WHERE (Game_Id) = @gameId";
+            string sqlstring2 = "UPDATE Game SET NextPlayer = @nextPlayer WHERE Id = @gameId";
             SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
             sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
             sqlCommand2.Parameters.AddWithValue("@nextPlayer", nextPlayer);
@@ -572,15 +572,15 @@ namespace BattleShits.Models
          */
         public int getNextPlayer(int gameId)
         {
-            string sqlstring = "SELECT (NextPlayer) FROM Game WHERE (Game_Id) = @gameId";
+            string sqlstring = "SELECT (NextPlayer) FROM Game WHERE Id = @gameId";
             SqlCommand sqlCommand = new SqlCommand(sqlstring, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@gameId", gameId);
 
             try
             {
                 sqlConnection.Open();
-                SqlDataReader reader = sqlCommand.ExecuteReader();
-                return reader.GetInt32(0);
+                object reader = sqlCommand.ExecuteScalar();
+                return Convert.ToInt32(reader);
             }
             catch (Exception e)
             {

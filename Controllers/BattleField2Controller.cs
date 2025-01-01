@@ -101,12 +101,14 @@ namespace BattleShits.Controllers
         {
             int[,] p1Board = database.getBoard(gameId, 1);
             int[,] p2Board = database.getBoard(gameId, 2);
+            int nextPlayer = database.getNextPlayer(gameId);
 
             ViewBag.p1Board = p1Board;
             ViewBag.p2Board = p2Board;
             ViewBag.message = message;
             ViewBag.gameId = gameId;
             ViewBag.p2BoardJson = JsonConvert.SerializeObject(p2Board);
+            ViewBag.nextPlayer = nextPlayer;
 
 
             return View("~/Views/Battle2/SeaBattle.cshtml", database);

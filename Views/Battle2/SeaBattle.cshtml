@@ -87,13 +87,30 @@
     }
 </table>
 
-<form method="post" asp-action="Fire">
-    <input type="hidden" name="playerNumber" value="1" />
-    <input type="hidden" name="gameNumber" value="@ViewBag.gameId" />
-    <input type="hidden" name="boardString" value="@ViewBag.p2BoardJson" />
-    <label for="x">Koordinat x:</label>
-    <input type="number" id="x" name="x" min="0" max="9" />
-    <label for="y">Koordinat Y:</label>
-    <input type="number" id="y" name="y" min="0" max="9" />
-    <button type="submit">Skjut</button>
-</form>
+@if (ViewBag.nextPlayer == 1)
+{
+    <form method="post" asp-action="Fire">
+        <input type="hidden" name="playerNumber" value="1" />
+        <input type="hidden" name="gameNumber" value="@ViewBag.gameId" />
+        <input type="hidden" name="boardString" value="@ViewBag.p2BoardJson" />
+        <label for="x">Koordinat x:</label>
+        <input type="number" id="x" name="x" min="0" max="9" />
+        <label for="y">Koordinat Y:</label>
+        <input type="number" id="y" name="y" min="0" max="9" />
+        <button type="submit">Skjut</button>
+    </form>
+}
+else
+{
+    <p>Spelare 2 ej ännu färdig</p>
+    <div style="text-align: center; margin-top: 20px;">
+
+
+        <a asp-action="SeaBattle" asp-controller="BattleField2"
+           asp-route-gameId="@ViewBag.gameId"
+           asp-route-message=""
+           class="btn btn-primary">Uppdatera</a>
+
+
+    </div>
+}
