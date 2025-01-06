@@ -1623,5 +1623,49 @@ namespace BattleShits.Models
 
             return (sunkenShips == 30);
         }
+
+        // Kontrollerar om spelet är slut, returnerar true/false
+        public bool checkIfGameOver(int[,] board1, int[,] board2)
+        {
+            bool gameOver = false;
+            int sunkenShots = 0;
+            for (int i = 0; i < board1.GetLength(0); i++)
+            {
+                for (int j = 0;j < board1.GetLength(1); j++)
+                {
+                    if (board1[i, j] == 4)
+                    {
+                        sunkenShots++;
+                    }
+                }
+            }
+
+            if (sunkenShots > 29)
+            {
+                gameOver = true;
+            }
+
+            if (!gameOver)
+            {
+                sunkenShots = 0;
+                for (int i = 0; i < board2.GetLength(0); i++)
+                {
+                    for (int j = 0; j < board2.GetLength(1); j++)
+                    {
+                        if (board1[i, j] == 4)
+                        {
+                            sunkenShots++;
+                        }
+                    }
+                }
+            }
+
+            if (sunkenShots > 29)
+            {
+                gameOver = true;
+            }
+
+            return gameOver;
+        }
     }
 }
