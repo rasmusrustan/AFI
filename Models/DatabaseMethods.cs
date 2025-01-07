@@ -1614,7 +1614,7 @@ namespace BattleShits.Models
             {
                 for (int j = 0; j < board.GetLength(1); j++)
                 {
-                    if (board[i, j] == 4)
+                    if ((board[i, j] == 4) || (board[i, j]  == 2))
                     {
                         sunkenShips++;
                     }
@@ -1633,7 +1633,7 @@ namespace BattleShits.Models
             {
                 for (int j = 0;j < board1.GetLength(1); j++)
                 {
-                    if (board1[i, j] == 4)
+                    if ((board1[i, j] == 4) || (board1[i, j] == 2))
                     {
                         sunkenShots++;
                     }
@@ -1652,7 +1652,7 @@ namespace BattleShits.Models
                 {
                     for (int j = 0; j < board2.GetLength(1); j++)
                     {
-                        if (board1[i, j] == 4)
+                        if ((board2[i, j] == 4) || (board2[i, j] == 2))
                         {
                             sunkenShots++;
                         }
