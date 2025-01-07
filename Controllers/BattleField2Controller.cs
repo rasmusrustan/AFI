@@ -102,6 +102,16 @@ namespace BattleShits.Controllers
             int[,] p1Board = database.getBoard(gameId, 1);
             int[,] p2Board = database.getBoard(gameId, 2);
             int nextPlayer = database.getNextPlayer(gameId);
+            
+
+            // Kontrollera om spelet är slut
+            if (!gameOver)
+            {
+                if (database.checkIfGameOver(p1Board, p2Board))
+                {
+                    gameOver = true;
+                }
+            }
 
             ViewBag.p1Board = p1Board;
             ViewBag.p2Board = p2Board;
@@ -111,14 +121,29 @@ namespace BattleShits.Controllers
             ViewBag.nextPlayer = nextPlayer;
             ViewBag.gameOver = gameOver;
 
-
-            return View("~/Views/Battle2/SeaBattle.cshtml", database);
+            if (!gameOver)
+            {
+                return View("~/Views/Battle2/SeaBattle.cshtml", database);
+            }
+            else
+            {
+                return RedirectToAction("Result", new { gameId = gameId });
+            }
         }
         public IActionResult SeaBattle2(int gameId, string message, bool gameOver)
         {
             int[,] p1Board = database.getBoard(gameId, 1);
             int[,] p2Board = database.getBoard(gameId, 2);
             int nextPlayer = database.getNextPlayer(gameId);
+
+            // Kontrollera om spelet är slut
+            if (!gameOver)
+            {
+                if (database.checkIfGameOver(p1Board, p2Board))
+                {
+                    gameOver = true;
+                }
+            }
 
             ViewBag.p1Board = p1Board;
             ViewBag.p2Board = p2Board;
@@ -128,11 +153,18 @@ namespace BattleShits.Controllers
             ViewBag.nextPlayer = nextPlayer;
             ViewBag.gameOver = gameOver;
 
-
-            return View("~/Views/Battle2/SeaBattle2.cshtml", database);
+            if (!gameOver)
+            {
+                return View("~/Views/Battle2/SeaBattle2.cshtml", database);
+            }
+            else
+            {
+                return RedirectToAction("Result", new { gameId = gameId });
+            }
         }
-        public IActionResult Result()
+        public IActionResult Result(int gameId)
         {
+            ViewBag.gameId = gameId;
             return View("~/Views/Battle2/Result.cshtml", database);
         }
 
