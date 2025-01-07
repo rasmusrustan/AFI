@@ -42,8 +42,8 @@
     });
 
     // När spelet startar, omdirigera till rätt vy
-    connection.on("GameStarted", () => {
-        window.location.href = '/Home/Index';
+    connection.on("GameStarted", (gameId, message) => {
+        window.location.href = `/BattleField2/AddShipP1?gameNumber=${gameId}&message=${message}`;
     });
 
 

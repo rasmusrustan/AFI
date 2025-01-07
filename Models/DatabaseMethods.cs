@@ -27,6 +27,8 @@ namespace BattleShits.Models
          * Stoppar även in spelare i spelet
          * Skapar även spelbräde med skepp
          * Returnerar Id för det skapade spelet
+         * 
+         * Rapport
          */
         public int CreateGame(string Player1, string Player2)
         {
@@ -63,6 +65,8 @@ namespace BattleShits.Models
 
         /*
          * Skapar spelbräde för instoppande av skepp, lägger även in spelbrädena i Game tabellen
+         * 
+         * Rapport
          */
         public void CreateBoards(int gameId)
         {
@@ -113,7 +117,7 @@ namespace BattleShits.Models
             return;
         }
 
-        
+        // Hämtar Id fär ett bräde
         public int getBoardNumberFromBoards(int board, int gameId)
         {
             string boardNumber = "Board" + board;

@@ -8,7 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BattleShits.Controllers
 {
-    [AllowAnonymous]
+    [Authorize]
     public class BattleField2Controller : Controller
     {
         private static DatabaseMethods database = new DatabaseMethods();
@@ -28,15 +28,10 @@ namespace BattleShits.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-        public IActionResult AddShipP1(bool firstStart, int gameNumber, string message)
+        public IActionResult AddShipP1(int gameNumber, string message)
         {
 
             int gameId = gameNumber;
-            if (firstStart == true)
-            {
-                gameId = database.CreateGame("P1", "P2");
-            }
-            
             
             int[,] p1Board = database.getBoard(gameId,1);
             string playerName = database.getPlayerNamefromGame(gameId, 1);
@@ -71,10 +66,10 @@ namespace BattleShits.Controllers
 
             return View("~/Views/Battle2/AddShipP1.cshtml", database);
         }
-        public IActionResult AddShipP2(bool firstStart, int gameNumber, string message)
+        public IActionResult AddShipP2(int gameNumber, string message)
         {
 
-            int gameId = database.getHighestGameNumber();
+            int gameId = gameNumber;
 
             int[,] p2Board = database.getBoard(gameId, 2);
             string playerName = database.getPlayerNamefromGame(gameId, 2);
@@ -237,11 +232,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för horizontellt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -259,11 +254,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för vertikalt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -272,23 +267,23 @@ namespace BattleShits.Controllers
                 string message = "Ogiltig orientering.";
                 if (playerNumber == 1)
                 {
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                 }
                 else
                 {
-                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                 }
             }
 
             if (playerNumber == 1)
             {
                 string message = "";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
             }
             else
             {
                 string message = "";
-                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceTrippleShip(string user, string orientation, int x, int y, int gameId)
@@ -321,11 +316,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för horizontellt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -343,11 +338,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för vertikalt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -356,23 +351,23 @@ namespace BattleShits.Controllers
                 string message = "Ogiltig orientering.";
                 if (playerNumber == 1)
                 {
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                 }
                 else
                 {
-                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                 }
             }
 
             if (playerNumber == 1)
             {
                 string message = "";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
             }
             else
             {
                 string message = "";
-                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceLongShip(string user, string orientation, int x, int y, int gameId)
@@ -406,11 +401,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för horizontellt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -428,11 +423,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för vertikalt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -441,23 +436,23 @@ namespace BattleShits.Controllers
                 string message = "Ogiltig orientering.";
                 if (playerNumber == 1)
                 {
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                 }
                 else
                 {
-                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                 }
             }
 
             if (playerNumber == 1)
             {
                 string message = "";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
             }
             else
             {
                 string message = "";
-                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
             }
         }
         public IActionResult PlaceTitanic(string user, string orientation, int x, int y, int gameId)
@@ -490,11 +485,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för horizontellt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -512,11 +507,11 @@ namespace BattleShits.Controllers
                     string message = "Ogiltig placering för vertikalt skepp.";
                     if (playerNumber == 1)
                     {
-                        return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                     }
                     else
                     {
-                        return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                        return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                     }
                 }
             }
@@ -525,23 +520,23 @@ namespace BattleShits.Controllers
                 string message = "Ogiltig orientering.";
                 if (playerNumber == 1)
                 {
-                    return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
                 }
                 else
                 {
-                    return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                    return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
                 }
             }
 
             if (playerNumber == 1)
             {
                 string message = "";
-                return RedirectToAction("AddShipP1", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
             }
             else
             {
                 string message = "";
-                return RedirectToAction("AddShipP2", new { firstStart = false, gameNumber = gameId, message = message });
+                return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
             }
         }
 

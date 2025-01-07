@@ -30,9 +30,11 @@
         });
     });
 
-    // Lyssna på "GameStarted" och omdirigera spelaren
-    connection.on("GameStarted", () => {
-        window.location.href = '/Users/Test';
+    // Lyssna på "GameStarted" och omdirigera spelaren efter en fördröjning
+    connection.on("GameStarted", (gameId, message) => {
+        setTimeout(() => {
+            window.location.href = `/BattleField2/AddShipP2?gameNumber=${gameId}&message=${message}`;
+        }, 1500);
     });
 
     // När anslutningen är klar, gå med i lobbyn

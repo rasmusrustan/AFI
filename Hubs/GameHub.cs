@@ -46,28 +46,10 @@ public class GameHub : Hub
 
     public async Task StartGame(string lobbyId)
     {
-        /*if (!_lobbies.TryGetValue(lobbyId, out var players) || players.Count != 2)
-        {
-            throw new InvalidOperationException("Det måste finnas exakt två spelare i lobbyn för att starta spelet.");
-        }
-
-        //int gameId = database.CreateGame(GetPlayerNameByIndex(lobbyId, 0), GetPlayerNameByIndex(lobbyId, 1));
-
-        // Skapa URL:er för spelarna
-        string hostRedirectUrl = $"/Home";
-        string playerRedirectUrl = $"/Users/Test";
-
-        // Skicka URL till rätt spelare (Värden - index 0, Spelare - index 1)
-        for (int i = 0; i < players.Count; i++)
-        {
-            var player = players[i];
-            string redirectUrl = i == 0 ? hostRedirectUrl : playerRedirectUrl;
-
-            // Skicka till rätt spelare via deras användarnamn
-            await Clients.User(player).SendAsync("GameStarted", redirectUrl);
-        }*/
-
-        await Clients.Group(lobbyId).SendAsync("GameStarted");
+   
+        int gameId = database.CreateGame(GetPlayerNameByIndex(lobbyId, 0), GetPlayerNameByIndex(lobbyId, 1));
+        string message = "";
+        await Clients.Group(lobbyId).SendAsync("GameStarted", gameId, message);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
