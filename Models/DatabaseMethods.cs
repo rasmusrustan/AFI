@@ -62,7 +62,7 @@ namespace BattleShits.Models
         }
 
         /*
-         * Skapar spelbräde för instoppande av skepp
+         * Skapar spelbräde för instoppande av skepp, lägger även in spelbrädena i Game tabellen
          */
         public void CreateBoards(int gameId)
         {
@@ -113,11 +113,11 @@ namespace BattleShits.Models
             return;
         }
 
+        
         public int getBoardNumberFromBoards(int board, int gameId)
         {
             string boardNumber = "Board" + board;
             string sqlstring1 = "SELECT (Id) FROM " + boardNumber + " WHERE (Game_Id) = @gameId";
-            string sqlstring2 = "INSERT INTO Board2 (Game_Id) VALUES (@gameId)";
             SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
             sqlCommand1.Parameters.AddWithValue("@gameId", Convert.ToInt32(gameId));
             int boardId = -3;
@@ -990,7 +990,7 @@ namespace BattleShits.Models
             }
             
             // Check sunken ships and update board
-            List<string> sunkenShots = updateSunkenShips(shots, boardNumber, gameId);
+            List<string> sunkenShots = getSunkenShips(shots, boardNumber, gameId);
             for (int i = 0; i < sunkenShots.Count; i++)
             {
                 string positionString = sunkenShots[i];
@@ -1231,7 +1231,7 @@ namespace BattleShits.Models
         }
 
         // Returnerar en lista med skott som är på ett sänkt skepp
-        public List<string> updateSunkenShips(List<Shot> shots, int boardNr, int gameId)
+        public List<string> getSunkenShips(List<Shot> shots, int boardNr, int gameId)
         {
             int playerNr = 1;
             if (boardNr == 1)

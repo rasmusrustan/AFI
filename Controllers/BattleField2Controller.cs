@@ -11,11 +11,7 @@ namespace BattleShits.Controllers
     [AllowAnonymous]
     public class BattleField2Controller : Controller
     {
-        /*private static BattleField2 battleField = new BattleField2();*/
         private static DatabaseMethods database = new DatabaseMethods();
-        
-
-        
         
 
         public IActionResult AddShipP1(bool firstStart, int gameNumber, string message)
