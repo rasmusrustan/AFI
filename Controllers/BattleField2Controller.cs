@@ -164,7 +164,35 @@ namespace BattleShits.Controllers
         }
         public IActionResult Result(int gameId)
         {
+            List<Shot> p1Shots = database.getShotsFromGame(gameId, 1);
+            List<Shot> p2Shots = database.getShotsFromGame(gameId, 2);
+            string winner = database.getWinner(gameId);
+            int p1ShotCount = p1Shots.Count;
+            int p2ShotCount = p2Shots.Count;
+            int p1HitCount = 0;
+            int p2HitCount = 0;
+
+            // Räkna träffar
+            for (int i = 0; i < p1Shots.Count; i++)
+            {
+                if (p1Shots[i].hit)
+                {
+                    p1HitCount++;
+                }
+            }
+            for (int i = 0; i < p2Shots.Count; i++)
+            {
+                if (p2Shots[i].hit)
+                {
+                    p2HitCount++;
+                }
+            }
+
+            ViewBag.winner = winner;
             ViewBag.gameId = gameId;
+            ViewBag.p1ShotCount = p1ShotCount;
+            ViewBag.p2ShotCount = p2ShotCount;
+
             return View("~/Views/Battle2/Result.cshtml", database);
         }
 

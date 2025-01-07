@@ -1667,5 +1667,37 @@ namespace BattleShits.Models
 
             return gameOver;
         }
+
+        // Hämtar vinnare från ett avslutat spel
+        public string getWinner(int gameId)
+        {
+            string sqlstring2 = "SELECT (Winner) FROM Game WHERE (Id) = @gameId";
+            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
+            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
+
+            try
+            {
+                sqlConnection.Open();
+                string winner = "NoWinner";
+                using (SqlDataReader reader = sqlCommand2.ExecuteReader())
+                {
+                    winner = reader.GetString(0);
+                }
+                if (winner == "NoWinner")
+                {
+                    Console.WriteLine("Get winner failed");
+                }
+                return winner;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "NoWinner";
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
     }
 }
