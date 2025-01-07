@@ -12,8 +12,22 @@ namespace BattleShits.Controllers
     public class BattleField2Controller : Controller
     {
         private static DatabaseMethods database = new DatabaseMethods();
-        
 
+        [HttpGet]
+        public IActionResult DeclareWinner(int gameId, string playerName)
+        {
+            try
+            {
+                // Anropa den redan existerande declareWinner-metoden
+                database.declareWinner(gameId, playerName);
+
+                return Json(new { success = true, message = $"Spelare {playerName} har vunnit!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
         public IActionResult AddShipP1(bool firstStart, int gameNumber, string message)
         {
 

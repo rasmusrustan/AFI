@@ -1,5 +1,10 @@
 ﻿@model BattleShits.Models.DatabaseMethods
-
+@section Scripts {
+    <script src="/game.js"></script>
+}
+<div id="timer" style="font-size: 20px; color: red;">Tid kvar: 60 sekunder</div>
+<div id="message" style="margin-top: 10px; font-size: 18px;"></div>
+<div id="game-info" data-game-id="@ViewBag.gameId"></div>
 @{
     ViewData["Title"] = "SeaBattle2";
 }
@@ -91,7 +96,7 @@
 {
     @if (ViewBag.nextPlayer == 2)
     {
-        <form method="post" asp-action="Fire">
+        <form method="post" asp-action="Fire" onsubmit="return playerShot()">
             <input type="hidden" name="playerNumber" value="2" />
             <input type="hidden" name="gameNumber" value="@ViewBag.gameId" />
             <input type="hidden" name="boardString" value="@ViewBag.p1BoardJson" />
@@ -121,3 +126,4 @@ else
 {
     <p>Game Over!</p>
 }
+
