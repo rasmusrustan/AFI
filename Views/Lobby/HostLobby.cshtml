@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Host Lobby";
+}
+
+<h1>Lobby: @ViewBag.LobbyId</h1>
+
+<div>
+    <h3>Inbjudningslänk:</h3>
+    <input type="text" value="@ViewBag.InvitationUrl" readonly style="width: 100%;" id="invitationLink" />
+    <button onclick="copyToClipboard()">Kopiera länk</button>
+</div>
+
+<div style="margin-top: 20px;">
+    <h3>Spelare i lobbyn:</h3>
+    <ul id="playerList"></ul>
+</div>
+
+<button id="startGameBtn" disabled onclick="startGame()">Starta spelet</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.2/signalr.min.js"></script>
+<script>
+    const lobbyId = "@ViewBag.LobbyId";
+
+    // Skapa en anslutning till SignalR-hubben
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+
+    // Uppdatera spelarlistan
+    connection.on("UpdatePlayerList", function(players) {
+        const playerList = document.getElementById("playerList");
+        playerList.innerHTML = ""; // Töm listan
+
+        players.forEach(player => {
+            const li = document.createElement("li");
+            li.textContent = player;
+            playerList.appendChild(li);
+        });
+
+        // Aktivera "Starta spelet"-knappen om det finns minst två spelare
+        document.getElementById("startGameBtn").disabled = players.length !== 2;
+    });
+
+    // När spelet startar, omdirigera till rätt vy
+    connection.on("GameStarted", () => {
+        window.location.href = '/Home/Index';
+    });
+
+
+    // När anslutningen är klar, gå med i lobbyn
+    connection.start().then(function() {
+        connection.invoke("JoinLobby", lobbyId).catch(err => console.error(err));
+    }).catch(err => console.error(err));
+
+    // Kopiera inbjudningslänken till urklipp
+    function copyToClipboard() {
+        const invitationLink = document.getElementById("invitationLink");
+        invitationLink.select();
+        document.execCommand("copy");
+        alert("Länk kopierad!");
+    }
+
+    function startGame() {
+        connection.invoke("StartGame", lobbyId)
+            .catch(err => console.error(err));
+    }
+</script>
