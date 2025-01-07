@@ -518,14 +518,7 @@ namespace BattleShits.Controllers
             bool gameOver = false;
             if (hit)
             {
-                if (playerNumber == 1)
-                {
-                    board = database.getBoard(gameNumber, 2);
-                }
-                else
-                {
-                    board = database.getBoard(gameNumber, 1);
-                }
+                board[x, y] = 2;
                 gameOver = database.areAllShipsSunk(board);
             }
 
