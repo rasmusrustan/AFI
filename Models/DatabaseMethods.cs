@@ -1681,7 +1681,7 @@ namespace BattleShits.Models
                 string winner = "NoWinner";
                 using (SqlDataReader reader = sqlCommand2.ExecuteReader())
                 {
-                    winner = reader.GetString(0);
+                    winner = reader.GetValue(0).ToString();
                 }
                 if (winner == "NoWinner")
                 {
