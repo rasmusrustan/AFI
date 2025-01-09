@@ -67,4 +67,51 @@ public class GameHub : Hub
 
         await base.OnDisconnectedAsync(exception);
     }
+    public async Task StartTimer(int gameId)
+    {
+        await Clients.Group(gameId.ToString()).SendAsync("StartTimer", gameId);
+    }
+
+    public async Task Shoot(int gameId, int x, int y)
+    {
+        // Informera andra spelare om ett skott har avfyrats
+        await Clients.Group(gameId.ToString()).SendAsync("ReceiveShot", gameId, x, y);
+        await StartTimer(gameId);  // Starta timern för båda spelarna
+    }
+
+
+    public async Task EndTurn(int gameId, int nextPlayerId)
+    {
+        // Meddela alla att det är nästa spelares tur
+        await Clients.Group(gameId.ToString()).SendAsync("NextTurn", gameId, nextPlayerId);
+    }
+
+
+    public async Task DeclareWinner(int gameId, int winnerPlayerNumber)
+    {
+        if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
+        {
+            Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+            await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+            return;
+        }
+
+        try
+        {
+            string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber);
+            Console.WriteLine($"DeclareWinner called. Game ID: {gameId}, Winner: {winnerName}");
+
+            database.declareWinner(gameId, winnerName);  // Uppdatera vinnaren med rätt namn
+            await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error declaring winner for game {gameId}: {ex.Message}");
+            await Clients.Caller.SendAsync("Error", $"An error occurred when declaring the winner for game {gameId}: {ex.Message}");
+        }
+    }
+
+
+
+
 }

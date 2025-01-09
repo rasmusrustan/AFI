@@ -490,43 +490,32 @@ namespace BattleShits.Models
          */
         public void declareWinner(int gameId, string playerName)
         {
-            string sqlstring1 = "UPDATE Game SET Winner = @playerName WHERE Id = @gameId";
-            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
-            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
-            sqlCommand1.Parameters.AddWithValue("@playerName", playerName);
-
-            string sqlstring2 = "UPDATE Game SET GameFinished = 1 WHERE Id = @gameId";
-            SqlCommand sqlCommand2 = new SqlCommand(sqlstring2, sqlConnection);
-            sqlCommand2.Parameters.AddWithValue("@gameId", gameId);
-
-            try
+            string sqlString = "UPDATE Game SET Winner = @playerName, GameFinished = 1 WHERE Id = @gameId";
+            using (var sqlCommand = new SqlCommand(sqlString, sqlConnection))
             {
-                sqlConnection.Open();
+                sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+                sqlCommand.Parameters.AddWithValue("@playerName", playerName);
 
-                int i = sqlCommand1.ExecuteNonQuery();
-                if (i != 1)
+                try
                 {
-                    Console.WriteLine("Insert command playername failed");
+                    sqlConnection.Open();
+                    int affectedRows = sqlCommand.ExecuteNonQuery();
+                    if (affectedRows != 1)
+                    {
+                        Console.WriteLine($"Update failed. Affected rows: {affectedRows}");
+                    }
                 }
-
-                int j = sqlCommand2.ExecuteNonQuery();
-                if (j != 1)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Insert command gameFinished failed");
+                    Console.WriteLine($"Error in declareWinner: {e.Message}");
                 }
-
-                return;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return;
-            }
-            finally
-            {
-                sqlConnection.Close();
+                finally
+                {
+                    sqlConnection.Close();
+                }
             }
         }
+
 
         /*
          * Uppdaterar Nextplayer i Game, om 1 sätts till 2 ochvise versa

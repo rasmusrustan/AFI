@@ -1,131 +1,105 @@
-﻿/*
-let turnTimer;
-let turnTimeLeft = 60;  // 60 sekunders timer
+﻿
+let turnTimer; // Global timer-referens
+let turnTimeLeft = 60; // Initialt antal sekunder
+let currentPlayer = 1; // Börjar med spelare 1, ändra vid behov
+let isCurrentPlayerTurn = true; // Flagga för att hantera spelarens tur
 
-function startTurnTimer(gameId, currentPlayer) {
-    turnTimeLeft = 60;
-    updateTimerDisplay(turnTimeLeft);
+
+const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+
+
+connection.start()
+    .then(() => {
+        console.log('SignalR connection established.');
+        startSimpleTimer(); // Starta timern när anslutningen är klar
+    })
+    .catch(err => console.error('SignalR connection error:', err));
+
+window.onload = () => {
+    if (isCurrentPlayerTurn) {
+        startSimpleTimer();  // Startar timern när spelet laddas
+    }
+};
+
+function startSimpleTimer() {
+    // Stoppa eventuell tidigare timer
+    if (turnTimer) {
+        clearInterval(turnTimer); // Rensa tidigare timer
+    }
+
+    turnTimeLeft = 60; // Startvärde
+    updateTimerDisplay(turnTimeLeft); // Uppdatera visningen
 
     turnTimer = setInterval(() => {
         turnTimeLeft -= 1;
         updateTimerDisplay(turnTimeLeft);
 
         if (turnTimeLeft <= 0) {
-            clearInterval(turnTimer);
-            declareWinner(gameId, currentPlayer === 'Player1' ? 'Player2' : 'Player1');
+            clearInterval(turnTimer); // Stoppa timern
+            document.getElementById("message").textContent = `Tiden är ute! Spelare ${currentPlayer} förlorade.`;
+
+            // Deklarera den andra spelaren som vinnare när timern når 0
+            declareWinner(currentPlayer === 1 ? 2 : 1);
+
         }
-    }, 1000);  // Uppdatera varje sekund
-}
-
-function updateTimerDisplay(timeLeft) {
-    const timerElement = document.getElementById("turn-timer");
-    if (timerElement) {
-        timerElement.textContent = `Tid kvar: ${timeLeft} sekunder`;
-    }
-}
-
-function declareWinner(gameId, winner) {
-    fetch(`/api/DatabaseMethods/declareWinner`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ gameId, winner })
-    }).then(response => {
-        if (!response.ok) {
-            console.error("Fel vid deklarering av vinnare.");
-        }
-    }).catch(error => {
-        console.error("Fel:", error);
-    });
-}
-*/
-
-function checkBoardsReady(gameId) {
-    fetch(`/api/DatabaseMethods/isGameSetup/${gameId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Något gick fel med begäran.');
-            }
-            return response.json();
-        })
-        .then(data => {
-
-            if (data.board1Ready && data.board2Ready) {
-                clearInterval(checkInterval);  // Stoppa kontrollen när båda spelarna är redo
-                startGame();  // Starta spelet
-            } else {
-                console.log("Väntar på att båda spelarna ska vara redo.");
-            }
-        })
-        .catch(error => {
-            console.error("Fel vid kontroll av brädstatus:", error);
-        });
-}
-
-const checkInterval = setInterval(() => {
-    const gameId = 1;
-    checkBoardsReady(gameId);
-}, 3000);
-
-
-let currentPlayer = 1; //spelare som börjar.
-let turnTimeLeft = 60;  // 60 sekunders timer
-let turnTimer;
-function startSimpleTimer() {
-    let turnTimeLeft = 60;  // 60 sekunders timer
-
-    updateTimerDisplay(turnTimeLeft); // Visa startvärdet
-
-    turnTimer = setInterval(() => {
-        turnTimeLeft -= 1;
-        updateTimerDisplay(turnTimeLeft); // Uppdatera värdet varje sekund
-
-        if (turnTimeLeft <= 0) {
-            clearInterval(turnTimer); // Stoppa timern när tiden är slut
-            //document.getElementById("message").textContent = "Tiden är ute!";
-            endTurn();
-        }
-    }, 1000);
-}
-function endTurn() {
-    document.getElementById("message").textContent = `Tiden är ute! Spelare ${currentPlayer} förlorade.`;
-    declareWinner(currentPlayer === 1 ? 2 : 1); // Deklarera vinnaren
+    }, 1000); // 1000 ms = 1 sekund
 }
 
 function updateTimerDisplay(timeLeft) {
     const timerElement = document.getElementById("timer");
     if (timerElement) {
         timerElement.textContent = `Tid kvar: ${timeLeft} sekunder`;
+    } else {
+        console.error("Timer-elementet hittades inte!");
     }
-}
-function playerShot() {
-    if (isCurrentPlayerTurn) {
-        clearInterval(turnTimer); // Stoppa timern för den aktuella spelaren
-        currentPlayer = currentPlayer === 1 ? 2 : 1; // Växla till nästa spelare
-        isCurrentPlayerTurn = !isCurrentPlayerTurn; // Växla tur
-
-        startSimpleTimer(); // Starta timern för den nya spelaren
-    }
-    return true; // Tillåt formuläret att skicka data
 }
 
 const gameInfoElement = document.getElementById("game-info");
-const gameId = gameInfoElement.dataset.gameId;
+const gameId = gameInfoElement ? gameInfoElement.dataset.gameId : null;
+
+if (!gameId) {
+    console.error("Game ID saknas. Kontrollera att game-info-diven innehåller data-game-id-attributet.");
+} else {
+    console.log(`Game ID hämtat: ${gameId}`);
+}
+
 
 function declareWinner(winnerPlayer) {
-    fetch(`/game/DeclareWinner?gameId=${gameId}&playerName=Player${winnerPlayer}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("message").textContent = `Spelare ${winnerPlayer} vann!`;
+    const numericGameId = parseInt(gameId, 10);
+    if (isNaN(numericGameId)) {
+        console.error("Ogiltigt gameId-värde.");
+        return;
+    }
+
+    console.log(`Declaring winner player ${winnerPlayer} for game ${numericGameId}`);
+    connection.invoke("DeclareWinner", numericGameId, winnerPlayer)
+        .catch(err => {
+            console.error("Error invoking DeclareWinner:", err.toString());
         });
 }
 
-window.onload = () => {
+
+
+function playerShot(x, y) {
     if (isCurrentPlayerTurn) {
-        startSimpleTimer();
+        clearInterval(turnTimer); // Stop timer for current player
+        isCurrentPlayerTurn = false;
+
+        connection.invoke("Shoot", gameId, x, y)
+            .catch(err => console.error(err.toString()));
+
+        currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch player
+        isCurrentPlayerTurn = true; // Enable next player's turn
+        startSimpleTimer(); // Start timer for the new player
     }
-};
+}
+
+
+
+connection.on("ReceiveShot", (gameId, x, y) => {
+    console.log(`Shot received at (${x}, ${y}) in game ${gameId}`);
+});
+
 
 
 
