@@ -46,7 +46,7 @@ public class GameHub : Hub
 
     public async Task StartGame(string lobbyId)
     {
-   
+
         int gameId = database.CreateGame(GetPlayerNameByIndex(lobbyId, 0), GetPlayerNameByIndex(lobbyId, 1));
         string message = "";
         await Clients.Group(lobbyId).SendAsync("GameStarted", gameId, message);
@@ -74,10 +74,23 @@ public class GameHub : Hub
 
     public async Task Shoot(int gameId, int x, int y)
     {
-        // Informera andra spelare om ett skott har avfyrats
+        // Inför skottet i databasen (som redan görs)
         await Clients.Group(gameId.ToString()).SendAsync("ReceiveShot", gameId, x, y);
-        await StartTimer(gameId);  // Starta timern för båda spelarna
+
+        // Kontrollera om skottantalet har ändrats
+        int previousShotCount = database.GetCurrentRowCount();
+        int currentShotCount = database.GetPreviousRowCount();
+
+        // Om skottantalet har förändrats, skicka en uppdatering till alla spelare
+        if (currentShotCount != previousShotCount)
+        {
+            await Clients.Group(gameId.ToString()).SendAsync("ShotCountChanged", gameId, currentShotCount); // Uppdatera skottantalet till alla spelare
+        }
+
+        // Starta timer (eller hantera någon annan logik efter skott)
+        await StartTimer(gameId);
     }
+
 
 
     public async Task EndTurn(int gameId, int nextPlayerId)
@@ -85,6 +98,34 @@ public class GameHub : Hub
         // Meddela alla att det är nästa spelares tur
         await Clients.Group(gameId.ToString()).SendAsync("NextTurn", gameId, nextPlayerId);
     }
+    
+
+    private int previousRowCount = 0;
+    private int noChangeCount = 0;  // Ny räknare för att hålla koll på repetitioner
+    private const int MaxNoChangeCount = 12;
+    public async Task CheckShotCountChange()
+    {
+        int currentRowCount = database.GetCurrentRowCount();  // Räkna antalet rader
+
+        if (currentRowCount != previousRowCount)
+        {
+            previousRowCount = currentRowCount;  // Uppdatera det tidigare värdet
+            noChangeCount = 0;  // Nollställ räknaren när en förändring sker
+            await Clients.All.SendAsync("ShotCountChanged", currentRowCount);  // Skicka uppdatering till alla klienter
+        }
+        else
+        {
+            noChangeCount++;  // Öka räknaren om det inte skett någon förändring
+        }
+
+        if (noChangeCount >= MaxNoChangeCount)
+        {
+            Console.WriteLine("Ingen förändring på 12 kontroller. Deklarerar vinnare.");
+              
+        }
+    }
+
+
 
 
     public async Task DeclareWinner(int gameId, int winnerPlayerNumber)
@@ -110,8 +151,6 @@ public class GameHub : Hub
             await Clients.Caller.SendAsync("Error", $"An error occurred when declaring the winner for game {gameId}: {ex.Message}");
         }
     }
-
-
 
 
 }

@@ -393,7 +393,7 @@ namespace BattleShits.Models
                 sqlConnection.Open();
                 int count = sqlCommand1.ExecuteNonQuery();
 
-                if (count < 1)
+                if (count < 1)  
                 {
                     Console.WriteLine("Insert shot failed");
                 }
@@ -410,6 +410,68 @@ namespace BattleShits.Models
             }
 
         }
+        // Funktion som returnerar antalet skott innan en förändring
+        public int GetPreviousRowCount()
+        {
+            string sql = "SELECT COUNT(*) FROM Shots";
+            SqlCommand command = new SqlCommand(sql, sqlConnection);
+
+            int previousRowCount = 0;
+
+            try
+            {
+                sqlConnection.Open();
+                var result = command.ExecuteScalar();
+                previousRowCount = result != DBNull.Value ? (int)result : 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error fetching previous row count: " + ex.Message);
+                return -1;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            return previousRowCount;
+        }
+
+        public int GetCurrentRowCount()
+        {
+            string sql = "SELECT COUNT(*) FROM Shots";
+            SqlCommand command = new SqlCommand(sql, sqlConnection);
+
+            int currentRowCount = 0;
+
+            try
+            {
+                sqlConnection.Open();
+                var result = command.ExecuteScalar();
+                currentRowCount = result != DBNull.Value ? (int)result : 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error fetching current row count: " + ex.Message);
+                return -1;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            return currentRowCount;
+        }
+
+        public bool HasRowCountChanged()
+        {
+            int previousRowCount = GetPreviousRowCount();
+            int currentRowCount = GetCurrentRowCount();
+
+            return currentRowCount != previousRowCount;
+        }
+
+
 
         /*
          * Returnerar spelarnamn
@@ -489,32 +551,32 @@ namespace BattleShits.Models
          * Updaterar vinnare och sätter game finished till 1
          */
         public void declareWinner(int gameId, string playerName)
-        {
-            string sqlString = "UPDATE Game SET Winner = @playerName, GameFinished = 1 WHERE Id = @gameId";
-            using (var sqlCommand = new SqlCommand(sqlString, sqlConnection))
-            {
-                sqlCommand.Parameters.AddWithValue("@gameId", gameId);
-                sqlCommand.Parameters.AddWithValue("@playerName", playerName);
+{
+    string sqlString = "UPDATE Game SET Winner = @playerName, GameFinished = 1 WHERE Id = @gameId";
+    using (var sqlCommand = new SqlCommand(sqlString, sqlConnection))
+    {
+        sqlCommand.Parameters.AddWithValue("@gameId", gameId);
+        sqlCommand.Parameters.AddWithValue("@playerName", playerName);
 
-                try
-                {
-                    sqlConnection.Open();
-                    int affectedRows = sqlCommand.ExecuteNonQuery();
-                    if (affectedRows != 1)
-                    {
-                        Console.WriteLine($"Update failed. Affected rows: {affectedRows}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Error in declareWinner: {e.Message}");
-                }
-                finally
-                {
-                    sqlConnection.Close();
-                }
+        try
+        {
+            sqlConnection.Open();
+            int affectedRows = sqlCommand.ExecuteNonQuery();
+            if (affectedRows != 1)
+            {
+                Console.WriteLine($"Update failed. Affected rows: {affectedRows}");
             }
         }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error in declareWinner: {e.Message}");
+        }
+        finally
+        {
+            sqlConnection.Close();
+        }
+    }
+}
 
 
         /*

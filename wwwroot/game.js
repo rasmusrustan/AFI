@@ -1,23 +1,36 @@
-﻿
-let turnTimer; // Global timer-referens
+﻿let turnTimer; // Global timer-referens
 let turnTimeLeft = 60; // Initialt antal sekunder
 let currentPlayer = 1; // Börjar med spelare 1, ändra vid behov
 let isCurrentPlayerTurn = true; // Flagga för att hantera spelarens tur
+let previousShotCount = 0;  
 
 
 const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
 
+const gameInfoElement = document.getElementById("game-info");
+const gameId = gameInfoElement ? gameInfoElement.dataset.gameId : null;
+
+if (!gameId) {
+    console.error("Game ID saknas. Kontrollera att game-info-diven innehåller data-game-id-attributet.");
+} else {
+    console.log(`Game ID hämtat: ${gameId}`);
+}
 
 connection.start()
     .then(() => {
         console.log('SignalR connection established.');
-        startSimpleTimer(); // Starta timern när anslutningen är klar
+        startSimpleTimer();
+        startShotCountCheck(); // Starta skottkontrollen
+        connection.invoke("CheckShotCountChange", gameId)  // Flytta hit
+            .then(() => console.log("Shot count checked."))
+            .catch(err => console.error("Error checking shot count:", err));
     })
     .catch(err => console.error('SignalR connection error:', err));
 
+
 window.onload = () => {
     if (isCurrentPlayerTurn) {
-        startSimpleTimer();  // Startar timern när spelet laddas
+        startSimpleTimer();  
     }
 };
 
@@ -44,6 +57,39 @@ function startSimpleTimer() {
         }
     }, 1000); // 1000 ms = 1 sekund
 }
+let shotCountTimer;
+function startShotCountCheck() {
+    shotCountTimer = setInterval(() => {
+        if (connection.state === signalR.HubConnectionState.Connected) {
+            console.log("Kontrollerar antalet skott...");
+            connection.invoke("CheckShotCountChange")
+                .catch(err => console.error("Fel vid kontroll av skottantal:", err));
+        } else {
+            console.error("SignalR-anslutningen är inte ansluten.");
+        }
+    }, 5000);  // Kontrollera var femte sekund
+}
+
+connection.on("ShotCountChanged", (newShotCount) => {
+    console.log(`Antal skott uppdaterat: ${newShotCount}`);
+
+    if (newShotCount !== previousShotCount) {
+        console.log(`Skottantal ändrades! Föregående: ${previousShotCount}, Nytt: ${newShotCount}`);
+        previousShotCount = newShotCount;  // Uppdatera det föregående värdet
+    } else {
+        console.log("Inget skottantal förändrat.");
+    }
+});
+
+connection.invoke("CheckShotCountChange", gameId)
+    .then(() => console.log("Shot count checked."))
+    .catch(err => {
+        console.error("Error checking shot count:", err);
+        alert(`Error: ${err.message}`); // Visa felmeddelande för att lättare identifiera orsaken
+    });
+
+
+
 
 function updateTimerDisplay(timeLeft) {
     const timerElement = document.getElementById("timer");
@@ -52,15 +98,6 @@ function updateTimerDisplay(timeLeft) {
     } else {
         console.error("Timer-elementet hittades inte!");
     }
-}
-
-const gameInfoElement = document.getElementById("game-info");
-const gameId = gameInfoElement ? gameInfoElement.dataset.gameId : null;
-
-if (!gameId) {
-    console.error("Game ID saknas. Kontrollera att game-info-diven innehåller data-game-id-attributet.");
-} else {
-    console.log(`Game ID hämtat: ${gameId}`);
 }
 
 
@@ -78,27 +115,6 @@ function declareWinner(winnerPlayer) {
         });
 }
 
-
-
-function playerShot(x, y) {
-    if (isCurrentPlayerTurn) {
-        clearInterval(turnTimer); // Stop timer for current player
-        isCurrentPlayerTurn = false;
-
-        connection.invoke("Shoot", gameId, x, y)
-            .catch(err => console.error(err.toString()));
-
-        currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch player
-        isCurrentPlayerTurn = true; // Enable next player's turn
-        startSimpleTimer(); // Start timer for the new player
-    }
-}
-
-
-
-connection.on("ReceiveShot", (gameId, x, y) => {
-    console.log(`Shot received at (${x}, ${y}) in game ${gameId}`);
-});
 
 
 
