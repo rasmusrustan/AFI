@@ -1754,5 +1754,41 @@ namespace BattleShits.Models
                 sqlConnection.Close();
             }
         }
+        public bool timerGameOver(int gameId)
+        {
+            string sqlstring1 = "SELECT (Id) FROM Game WHERE (Id) = @gameId AND ISNULL(GameFinished, 0) = 1";
+            bool gameOver = false;
+            SqlCommand sqlCommand1 = new SqlCommand(sqlstring1, sqlConnection);
+            sqlCommand1.Parameters.AddWithValue("@gameId", gameId);
+
+            SqlDataAdapter sqlDataAdapter1 = new SqlDataAdapter(sqlCommand1);
+            DataSet dataSet1 = new DataSet();
+
+            try
+            {
+                sqlConnection.Open();
+
+                sqlDataAdapter1.Fill(dataSet1, "GameFinished");
+
+                int ready1 = dataSet1.Tables["GameFinished"].Rows.Count;
+
+                if (ready1 > 0)
+                {
+                    gameOver = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+            return gameOver;
+        }
+
+
     }
 }

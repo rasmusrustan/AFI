@@ -8,9 +8,10 @@ let previousShotCount = 0;
 const connection = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
 
 const gameInfoElement = document.getElementById("game-info");
-const gameId = gameInfoElement ? gameInfoElement.dataset.gameId : null;
+const gameIdString = gameInfoElement ? gameInfoElement.dataset.gameId : null;
+const gameId = gameIdString ? parseInt(gameIdString, 10) : null;
 
-if (!gameId) {
+if (gameId== null) {
     console.error("Game ID saknas. Kontrollera att game-info-diven innehåller data-game-id-attributet.");
 } else {
     console.log(`Game ID hämtat: ${gameId}`);
@@ -18,6 +19,7 @@ if (!gameId) {
 
 connection.start()
     .then(() => {
+        
         console.log('SignalR connection established.');
         startSimpleTimer();
         startShotCountCheck(); // Starta skottkontrollen
@@ -29,15 +31,13 @@ connection.start()
 
 
 window.onload = () => {
-    if (isCurrentPlayerTurn) {
-        startSimpleTimer();  
-    }
+    
 };
 
 function startSimpleTimer() {
     // Stoppa eventuell tidigare timer
     if (turnTimer) {
-        clearInterval(turnTimer); // Rensa tidigare timer
+        clearInterval(turnTimer);
     }
 
     turnTimeLeft = 60; // Startvärde
@@ -51,18 +51,27 @@ function startSimpleTimer() {
             clearInterval(turnTimer); // Stoppa timern
             document.getElementById("message").textContent = `Tiden är ute! Spelare ${currentPlayer} förlorade.`;
 
-            // Deklarera den andra spelaren som vinnare när timern når 0
+            // Deklarera den andra spelaren som vinnare
             declareWinner(currentPlayer === 1 ? 2 : 1);
-
         }
     }, 1000); // 1000 ms = 1 sekund
 }
+
 let shotCountTimer;
-function startShotCountCheck(gameId) {
+function startShotCountCheck() {
     shotCountTimer = setInterval(() => {
         if (connection.state === signalR.HubConnectionState.Connected) {
             console.log("Kontrollerar antalet skott...");
-            connection.invoke("CheckShotCountChange")
+            //if (!connection.invoke("timerGameOver", gameId))
+
+                connection.invoke("CheckShotCountChange",gameId)
+            
+            /*else
+            {
+                /// skicka till resultatsida.
+            }
+            */
+
                 .catch(err => console.error("Fel vid kontroll av skottantal:", err));
         } else {
             console.error("SignalR-anslutningen är inte ansluten.");
@@ -76,10 +85,15 @@ connection.on("ShotCountChanged", (newShotCount) => {
     if (newShotCount !== previousShotCount) {
         console.log(`Skottantal ändrades! Föregående: ${previousShotCount}, Nytt: ${newShotCount}`);
         previousShotCount = newShotCount;  // Uppdatera det föregående värdet
+
+        if (isCurrentPlayerTurn) {
+            startSimpleTimer();
+        }
     } else {
         console.log("Inget skottantal förändrat.");
     }
 });
+
 
 connection.invoke("CheckShotCountChange", gameId)
     .then(() => console.log("Shot count checked."))
@@ -114,6 +128,11 @@ function declareWinner(winnerPlayer) {
             console.error("Error invoking DeclareWinner:", err.toString());
         });
 }
+connection.on("Result", (redirectUrl) => {
+    // Omdirigerar användaren till Result-sidan
+    window.location.href = redirectUrl;
+});
+
 
 
 

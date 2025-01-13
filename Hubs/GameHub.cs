@@ -101,56 +101,63 @@ public class GameHub : Hub
     
 
     private int previousRowCount = 0;
-    private int noChangeCount = 0;  
-    private const int MaxNoChangeCount = 6;
-    public async Task CheckShotCountChange()
-    {
-        int currentRowCount = database.GetCurrentRowCount();  
+    private int noChangeCount = 0;
 
-        if (currentRowCount != previousRowCount)
+    public async Task CheckShotCountChange(int gameId)
+    {
+        if (!database.timerGameOver(gameId))
         {
-            previousRowCount = currentRowCount;  
-            noChangeCount = 0;  
-            await Clients.All.SendAsync("ShotCountChanged", currentRowCount);  
+            int currentRowCount = database.GetCurrentRowCount();
+
+            if (currentRowCount != previousRowCount)
+            {
+                previousRowCount = currentRowCount;
+                noChangeCount = 0;
+                await Clients.All.SendAsync("ShotCountChanged", currentRowCount);
+            }
+            else
+            {
+                noChangeCount++;
+            }
         }
         else
         {
-            noChangeCount++;  
-        }
+            string redirectUrl = $"/Game/Result?gameNumber={gameId}&message=GameOver";
 
-        if (noChangeCount >= MaxNoChangeCount)
-        {
-            Console.WriteLine("Ingen förändring på 12 kontroller. Deklarerar vinnare.");
-            
-            
+            // Skickar URL till klienterna i rätt grupp
+            await Clients.Group(gameId.ToString()).SendAsync("Result", redirectUrl);
         }
-
     }
+
+
 
 
 
 
     public async Task DeclareWinner(int gameId, int winnerPlayerNumber)
     {
-        if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
+        if (database.timerGameOver(gameId))
         {
-            Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
-            await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
-            return;
-        }
+            if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
+            {
+                Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+                await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+                return;
+            }
 
-        try
-        {
-            string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber);
-            Console.WriteLine($"DeclareWinner called. Game ID: {gameId}, Winner: {winnerName}");
+            try
+            {
+                string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber);
+                Console.WriteLine($"DeclareWinner called. Game ID: {gameId}, Winner: {winnerName}");
 
-            database.declareWinner(gameId, winnerName);  // Uppdatera vinnaren med rätt namn
-            await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error declaring winner for game {gameId}: {ex.Message}");
-            await Clients.Caller.SendAsync("Error", $"An error occurred when declaring the winner for game {gameId}: {ex.Message}");
+                database.declareWinner(gameId, winnerName);  // Uppdatera vinnaren med rätt namn
+                await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error declaring winner for game {gameId}: {ex.Message}");
+                await Clients.Caller.SendAsync("Error", $"An error occurred when declaring the winner for game {gameId}: {ex.Message}");
+            }
         }
     }
 
