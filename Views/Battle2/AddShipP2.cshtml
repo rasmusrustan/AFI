@@ -12,7 +12,7 @@
 
 @if (ViewBag.TitanicExists == false)
 {
-    <form method="post" asp-action="PlaceTitanic">
+    <form method="post" asp-action="quickPlacementofShips">
         <input type="hidden" name="user" value="@ViewBag.PlayerName" />
         <input type="hidden" name="gameId" value="@ViewBag.GameId" />
 
