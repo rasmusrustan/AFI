@@ -194,7 +194,7 @@ namespace BattleShits.Models
                     shipTypeAndNumber = "Titanic";
                 }
 
-                if (doesShipExist(getBoardNumber(gameId, playernumber), playernumber, shipTypeAndNumber))
+                if (doesShipExist(boardId, playernumber, shipTypeAndNumber))
                 {
                     int shipNumber = getShipIdentity(playernumber, boardId, shipTypeAndNumber);
                     int firstpos = -1;
