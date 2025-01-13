@@ -605,5 +605,42 @@ namespace BattleShits.Controllers
             }
         }
 
+
+        // Snabbplacering av alla skepp
+        public IActionResult quickPlacementofShips(string user, int gameId)
+        {
+            PlaceTitanic(user, "hor", 0, 0, gameId);
+            PlaceLongShip(user, "hor", 0, 1, gameId);
+            PlaceLongShip(user, "hor", 0, 2, gameId);
+            PlaceTrippleShip(user, "hor", 0, 3, gameId);
+            PlaceTrippleShip(user, "hor", 0, 4, gameId);
+            PlaceTrippleShip(user, "hor", 0, 5, gameId);
+            PlaceDoubleShip(user, "hor", 0, 6, gameId);
+            PlaceDoubleShip(user, "hor", 0, 7, gameId);
+            PlaceDoubleShip(user, "hor", 0, 8, gameId);
+            PlaceDoubleShip(user, "hor", 0, 9, gameId);
+
+            int playerNumber = -1;
+            if (user == database.getPlayerNamefromGame(gameId, 1))
+            {
+                playerNumber = 1;
+            }
+            if (user == database.getPlayerNamefromGame(gameId, 2))
+            {
+                playerNumber = 2;
+            }
+
+            if (playerNumber == 1)
+            {
+                string message = "";
+                return RedirectToAction("AddShipP1", new { gameNumber = gameId, message = message });
+            }
+            else
+            {
+                string message = "";
+                return RedirectToAction("AddShipP2", new { gameNumber = gameId, message = message });
+            }
+        }
+
     }
 }

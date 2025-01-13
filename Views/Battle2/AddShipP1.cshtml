@@ -9,6 +9,17 @@
 <p>@ViewBag.Message</p>
 
 <h2>Place the Titanic - 5 slots</h2>
+
+@if (ViewBag.TitanicExists == false)
+{
+    <form method="post" asp-action="PlaceTitanic">
+        <input type="hidden" name="user" value="@ViewBag.PlayerName" />
+        <input type="hidden" name="gameId" value="@ViewBag.GameId" />
+        
+        <button type="submit">Quick Placement</button>
+    </form>
+}
+
 @if (ViewBag.TitanicExists == false)
 {
     <form method="post" asp-action="PlaceTitanic">
