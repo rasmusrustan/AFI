@@ -101,28 +101,30 @@ public class GameHub : Hub
     
 
     private int previousRowCount = 0;
-    private int noChangeCount = 0;  // Ny räknare för att hålla koll på repetitioner
-    private const int MaxNoChangeCount = 12;
+    private int noChangeCount = 0;  
+    private const int MaxNoChangeCount = 6;
     public async Task CheckShotCountChange()
     {
-        int currentRowCount = database.GetCurrentRowCount();  // Räkna antalet rader
+        int currentRowCount = database.GetCurrentRowCount();  
 
         if (currentRowCount != previousRowCount)
         {
-            previousRowCount = currentRowCount;  // Uppdatera det tidigare värdet
-            noChangeCount = 0;  // Nollställ räknaren när en förändring sker
-            await Clients.All.SendAsync("ShotCountChanged", currentRowCount);  // Skicka uppdatering till alla klienter
+            previousRowCount = currentRowCount;  
+            noChangeCount = 0;  
+            await Clients.All.SendAsync("ShotCountChanged", currentRowCount);  
         }
         else
         {
-            noChangeCount++;  // Öka räknaren om det inte skett någon förändring
+            noChangeCount++;  
         }
 
         if (noChangeCount >= MaxNoChangeCount)
         {
             Console.WriteLine("Ingen förändring på 12 kontroller. Deklarerar vinnare.");
-              
+            
+            
         }
+
     }
 
 

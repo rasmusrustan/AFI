@@ -21,7 +21,7 @@ connection.start()
         console.log('SignalR connection established.');
         startSimpleTimer();
         startShotCountCheck(); // Starta skottkontrollen
-        connection.invoke("CheckShotCountChange", gameId)  // Flytta hit
+        connection.invoke("CheckShotCountChange", gameId) 
             .then(() => console.log("Shot count checked."))
             .catch(err => console.error("Error checking shot count:", err));
     })
@@ -58,7 +58,7 @@ function startSimpleTimer() {
     }, 1000); // 1000 ms = 1 sekund
 }
 let shotCountTimer;
-function startShotCountCheck() {
+function startShotCountCheck(gameId) {
     shotCountTimer = setInterval(() => {
         if (connection.state === signalR.HubConnectionState.Connected) {
             console.log("Kontrollerar antalet skott...");
