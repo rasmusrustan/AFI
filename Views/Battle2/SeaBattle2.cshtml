@@ -14,91 +14,94 @@
 <p>Spelare 2's stridsvy!</p>
 <p>@ViewBag.message</p>
 
-<div style="margin-top: 20px;">
-    <h3>Spelare i lobbyn:</h3>
-    <ul id="playerList"></ul>
+
+<div style="display: flex;">
+    <h3 style="margin-right: 340px;">Ditt bräde</h3>
+    <h3>Motståndarens bräde</h3>
+</div>
+
+<div style="display: flex;">
+    <table style="border-spacing: 0; margin-right: 30px;">
+        @for (int i = 0; i < ViewBag.p2Board.GetLength(0); i++)
+        {
+            <tr>
+                @for (int j = 0; j < ViewBag.p2Board.GetLength(1); j++)
+                {
+                    <td style="width: 40px; height: 40px; text-align: center; border: 5px solid black;">
+                        @if (ViewBag.p2Board[j, i] == 3)
+                        {
+                            <span>💧</span>
+                            // Miss
+                        }
+
+                        else if (ViewBag.p2Board[j, i] == 2)
+                        {
+                            <span>🔥</span>
+                            // Träff
+                        }
+                        else if (ViewBag.p2Board[j, i] == 1)
+                        {
+                            <span>🚢</span>
+                            // Skepp
+                        }
+                        else if (ViewBag.p2Board[j, i] == 4)
+                        {
+                            <span>🔴</span>
+                            // Sänkt skepp
+                        }
+                        else
+                        {
+                            <span>🌊</span>
+                            // Vatten
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+
+
+    <table style="border-spacing: 0; margin-left: 30px;">
+        @for (int i = 0; i < ViewBag.p1Board.GetLength(0); i++)
+        {
+            <tr>
+                @for (int j = 0; j < ViewBag.p1Board.GetLength(1); j++)
+                {
+                    <td style="width: 40px; height: 40px; text-align: center; border: 5px solid black;">
+                        @if (ViewBag.p1Board[j, i] == 3)
+                        {
+                            <span>💧</span>
+                            // Vatten
+                        }
+
+                        else if (ViewBag.p1Board[j, i] == 2)
+                        {
+                            <span>🔥</span>
+                            // Träff
+                        }
+                        else if (ViewBag.p1Board[j, i] == 1)
+                        {
+                            <span>🌊</span>
+                            // Miss
+                        }
+                        else if (ViewBag.p1Board[j, i] == 4)
+                        {
+                            <span>🔴</span>
+                            // Sänkt skepp
+                        }
+                        else
+                        {
+                            <span>🌊</span>
+                            // Skepp
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
 </div>
 
 
-<h3>Ditt bräde</h3>
-<table>
-    @for (int i = 0; i < ViewBag.p2Board.GetLength(0); i++)
-    {
-        <tr>
-            @for (int j = 0; j < ViewBag.p2Board.GetLength(1); j++)
-            {
-                <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
-                    @if (ViewBag.p2Board[j, i] == 3)
-                    {
-                        <span>💧</span>
-                        // Miss
-                    }
-
-                    else if (ViewBag.p2Board[j, i] == 2)
-                    {
-                        <span>🔥</span>
-                        // Träff
-                    }
-                    else if (ViewBag.p2Board[j, i] == 1)
-                    {
-                        <span>🚢</span>
-                        // Skepp
-                    }
-                    else if (ViewBag.p2Board[j, i] == 4)
-                    {
-                        <span>🔴</span>
-                        // Sänkt skepp
-                    }
-                    else
-                    {
-                        <span>🌊</span>
-                        // Vatten
-                    }
-                </td>
-            }
-        </tr>
-    }
-</table>
-
-<h3>Här skjuter du!</h3>
-<table>
-    @for (int i = 0; i < ViewBag.p1Board.GetLength(0); i++)
-    {
-        <tr>
-            @for (int j = 0; j < ViewBag.p1Board.GetLength(1); j++)
-            {
-                <td style="width: 70px; height: 70px; text-align: center; border: 5px solid black;">
-                    @if (ViewBag.p1Board[j, i] == 3)
-                    {
-                        <span>💧</span>
-                        // Vatten
-                    }
-
-                    else if (ViewBag.p1Board[j, i] == 2)
-                    {
-                        <span>🔥</span>
-                        // Träff
-                    }
-                    else if (ViewBag.p1Board[j, i] == 1)
-                    {
-                        <span>🌊</span>
-                        // Miss
-                    }
-                    else if (ViewBag.p1Board[j, i] == 4)
-                    {
-                        <span>🔴</span>
-                        // Sänkt skepp
-                    }
-                    else
-                    {
-                        <span>🌊</span>
-                        // Skepp
-                    }
-                </td>
-            }
-        </tr>
-    }
-</table>
 
 @if (ViewBag.gameOver == false)
 {
