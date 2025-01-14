@@ -18,12 +18,12 @@ namespace BattleShits.Models
         SqlConnection sqlConnection = new SqlConnection
         {
             // Micke string
-            ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BattleLocal;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
+           // ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BattleLocal;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
 
-            /*
+            
             // Rasmus string
             ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
-            */
+
 
         };
 
@@ -1740,16 +1740,15 @@ namespace BattleShits.Models
             try
             {
                 sqlConnection.Open();
-                string winner = "NoWinner";
-                using (SqlDataReader reader = sqlCommand2.ExecuteReader())
-                {
-                    winner = reader.GetValue(0).ToString();
-                }
-                if (winner == "NoWinner")
+                string winner1 = "NoWinner";
+                object winner = sqlCommand2.ExecuteScalar();
+                winner1 = winner.ToString();
+                
+                if (winner1 == "NoWinner")
                 {
                     Console.WriteLine("Get winner failed");
                 }
-                return winner;
+                return winner1;
             }
             catch (Exception ex)
             {

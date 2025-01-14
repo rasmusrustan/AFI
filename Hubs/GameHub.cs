@@ -1,5 +1,6 @@
 ﻿using BattleShits.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using System;
 using System.Collections.Concurrent;
@@ -53,6 +54,7 @@ public class GameHub : Hub
         string message = "";
         await Clients.Group(lobbyId).SendAsync("GameStarted", gameId, message);
     }
+
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
@@ -126,30 +128,9 @@ public class GameHub : Hub
         }
         else
         {
-            Console.WriteLine($"Redirecting to result for gameId: {gameId}");
-            await Clients.Group(gameId.ToString()).SendAsync("RedirectToResult", gameId);
-
-            /*
-            // Skapa URL för att kalla på din controller-metod med gameId
-            int winner = database.getNextPlayer(gameId);
-
-            if (winner == 1)
-            {
-                winner = 2;
-            }
-            else if (winner == 2)
-            {
-                winner = 1;
-            }
-            else {
-                Console.WriteLine("Error Ogiltigt argument för vinnarnummer");
-
-            }
-
-            await DeclareWinner(gameId,winner);
-            */
-
+            await Clients.All.SendAsync("RedirectResult", gameId);
         }
+        
 
     }
 
@@ -168,10 +149,20 @@ public class GameHub : Hub
 
         try
         {
-            string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber); // Använder databasmetoden för att hämta spelarens namn
+            int winner = database.getNextPlayer(gameId);
+
+            if (winner == 1)
+            {
+                winner = 2;
+            }
+            else if (winner == 2)
+            {
+                winner = 1;
+            }
+            string winnerName = database.getPlayerNamefromGame(gameId, winner); // Använder databasmetoden för att hämta spelarens namn
             if (string.IsNullOrEmpty(winnerName))
             {
-                Console.WriteLine($"Spelare kunde inte hittas för gameId={gameId} och winnerPlayerNumber={winnerPlayerNumber}");
+                Console.WriteLine($"Spelare kunde inte hittas för gameId={gameId} och winnerPlayerNumber={winner}");
                 await Clients.Caller.SendAsync("Error", $"Spelare kunde inte hittas.");
                 return;
             }

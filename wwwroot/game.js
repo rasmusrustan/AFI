@@ -84,6 +84,7 @@ connection.on("ShotCountChanged", (newShotCount) => {
 
 connection.invoke("CheckShotCountChange", gameId)
     .then(() => console.log("Shot count checked."))
+
     .catch(err => {
         console.error("Error checking shot count:", err);
         alert(`Error: ${err.message}`); // Visa felmeddelande för att lättare identifiera orsaken
@@ -110,20 +111,17 @@ function declareWinner(winnerPlayer) {
     }
 
     console.log(`Declaring winner player ${winnerPlayer} for game ${numericGameId}`);
-    connection.invoke("DeclareWinner", numericGameId, winnerPlayer)
-        .catch(err => {
+    connection.invoke("DeclareWinner", numericGameId, winnerPlayer).catch(err => {
             console.error("Error invoking DeclareWinner:", err.toString());
-        });
+    });
+    window.location.href = `/BattleField2/Result?gameId=${numericGameId}`
+
 }
 
-connection.on("RedirectToResult", (gameId) => {
-    console.log("Mottog RedirectToResult med gameId:", gameId);
+function RedirectResult() {
+    window.location.href = `/BattleField2/Result?gameId=${numericGameId}`
 
-    const redirectUrl = `/BattleField2/Result?gameNumber=${gameId}`;
-    console.log("Omdirigering till:", redirectUrl);
-
-    window.location.href = redirectUrl;
-});
+}
 
 
 

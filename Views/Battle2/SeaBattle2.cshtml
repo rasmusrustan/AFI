@@ -99,7 +99,7 @@
 {
     @if (ViewBag.nextPlayer == 2)
     {
-        <form method="post" asp-action="Fire" onsubmit="return playerShot()">
+        <form method="post" asp-action="Fire">
             <input type="hidden" name="playerNumber" value="2" />
             <input type="hidden" name="gameNumber" value="@ViewBag.gameId" />
             <input type="hidden" name="boardString" value="@ViewBag.p1BoardJson" />
