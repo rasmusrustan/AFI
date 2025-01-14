@@ -126,6 +126,10 @@ public class GameHub : Hub
         }
         else
         {
+            Console.WriteLine($"Redirecting to result for gameId: {gameId}");
+            await Clients.Group(gameId.ToString()).SendAsync("RedirectToResult", gameId);
+
+            /*
             // Skapa URL för att kalla på din controller-metod med gameId
             int winner = database.getNextPlayer(gameId);
 
@@ -143,8 +147,8 @@ public class GameHub : Hub
             }
 
             await DeclareWinner(gameId,winner);
+            */
 
-        
         }
 
     }
@@ -179,8 +183,7 @@ public class GameHub : Hub
             await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
             Console.WriteLine($"Vinnare deklarerad för gameId={gameId}: {winnerName}");
 
-            Console.WriteLine($"Redirecting to result for gameId: {gameId}");
-            await Clients.Group(gameId.ToString()).SendAsync("RedirectToResult", gameId);
+            
 
         }
         catch (Exception ex)
