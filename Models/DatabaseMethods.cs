@@ -17,7 +17,14 @@ namespace BattleShits.Models
 
         SqlConnection sqlConnection = new SqlConnection
         {
+            // Micke string
+            ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BattleLocal;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
+
+            /*
+            // Rasmus string
             ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False"
+            */
+
         };
 
         // Publika metoder
