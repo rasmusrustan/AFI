@@ -1,5 +1,7 @@
 ﻿using BattleShits.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
+using System;
 using System.Collections.Concurrent;
 
 public class GameHub : Hub
@@ -101,8 +103,8 @@ public class GameHub : Hub
     
 
     private int previousRowCount = 0;
-    private int noChangeCount = 0;
-
+    private int noChangeCount = 0;  
+    
     public async Task CheckShotCountChange(int gameId)
     {
         if (!database.timerGameOver(gameId))
@@ -119,16 +121,33 @@ public class GameHub : Hub
             {
                 noChangeCount++;
             }
+
+
         }
         else
         {
-            string redirectUrl = $"/Game/Result?gameNumber={gameId}&message=GameOver";
+            // Skapa URL för att kalla på din controller-metod med gameId
+            int winner = database.getNextPlayer(gameId);
 
-            // Skickar URL till klienterna i rätt grupp
-            await Clients.Group(gameId.ToString()).SendAsync("Result", redirectUrl);
+            if (winner == 1)
+            {
+                winner = 2;
+            }
+            else if (winner == 2)
+            {
+                winner = 1;
+            }
+            else {
+                Console.WriteLine("Error Ogiltigt argument för vinnarnummer");
+
+            }
+
+            await DeclareWinner(gameId,winner);
+
+        
         }
-    }
 
+    }
 
 
 
@@ -136,30 +155,41 @@ public class GameHub : Hub
 
     public async Task DeclareWinner(int gameId, int winnerPlayerNumber)
     {
-        if (database.timerGameOver(gameId))
+        if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
         {
-            if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
+            Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+            await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+            return;
+        }
+
+        try
+        {
+            string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber); // Använder databasmetoden för att hämta spelarens namn
+            if (string.IsNullOrEmpty(winnerName))
             {
-                Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
-                await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
+                Console.WriteLine($"Spelare kunde inte hittas för gameId={gameId} och winnerPlayerNumber={winnerPlayerNumber}");
+                await Clients.Caller.SendAsync("Error", $"Spelare kunde inte hittas.");
                 return;
             }
 
-            try
-            {
-                string winnerName = database.getPlayerNamefromGame(gameId, winnerPlayerNumber);
-                Console.WriteLine($"DeclareWinner called. Game ID: {gameId}, Winner: {winnerName}");
+            // Uppdaterar vinnaren i databasen
+            database.declareWinner(gameId, winnerName);
 
-                database.declareWinner(gameId, winnerName);  // Uppdatera vinnaren med rätt namn
-                await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error declaring winner for game {gameId}: {ex.Message}");
-                await Clients.Caller.SendAsync("Error", $"An error occurred when declaring the winner for game {gameId}: {ex.Message}");
-            }
+            // Skickar meddelande till alla klienter i rätt grupp att vinnaren är deklarerad
+            await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
+            Console.WriteLine($"Vinnare deklarerad för gameId={gameId}: {winnerName}");
+
+            Console.WriteLine($"Redirecting to result for gameId: {gameId}");
+            await Clients.Group(gameId.ToString()).SendAsync("RedirectToResult", gameId);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fel vid deklarering av vinnare för gameId={gameId}: {ex.Message}");
+            await Clients.Caller.SendAsync("Error", $"Fel inträffade vid deklarering av vinnare: {ex.Message}");
         }
     }
+
 
 
 }
