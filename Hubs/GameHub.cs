@@ -103,12 +103,14 @@ public class GameHub : Hub
         await Clients.Group(gameId.ToString()).SendAsync("NextTurn", gameId, nextPlayerId);
     }
     
-
+ 
     private int previousRowCount = 0;
     private int noChangeCount = 0;  
     
     public async Task CheckShotCountChange(int gameId)
     {
+        await Groups.AddToGroupAsync(Context.ConnectionId,gameId.ToString());
+
         if (!database.timerGameOver(gameId))
         {
             int currentRowCount = database.GetCurrentRowCount();
