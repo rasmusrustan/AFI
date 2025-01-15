@@ -197,6 +197,8 @@ namespace BattleShits.Controllers
             ViewBag.gameId = gameId;
             ViewBag.p1ShotCount = p1ShotCount;
             ViewBag.p2ShotCount = p2ShotCount;
+            ViewBag.p1HitCount = p1HitCount;
+            ViewBag.p2HitCount = p2HitCount;
 
             return View("~/Views/Battle2/Result.cshtml", database);
         }
