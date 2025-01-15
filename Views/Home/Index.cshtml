@@ -7,6 +7,16 @@
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
+<p>Inloggad som @User.Identity.Name</p>
+
+<form asp-action="HostLobby" asp-controller="Lobby" method="post">
+    <button type="submit">Host a game</button>
+</form>
+
+<form asp-action="Logout" asp-controller="Users" method="post">
+    <button type="submit">Logga ut</button>
+</form>
+
 @model IEnumerable<BattleShits.Controllers.HomeController.Leaderboard>
 
 <h2>Leaderboard</h2>
@@ -15,11 +25,24 @@
         <tr>
             <th>Rank</th>
             <th>Player</th>
-            <th>Wins</th>
+            <th>
+                <a asp-action="Index" asp-route-sortField="Wins" asp-route-sortOrder="@(ViewBag.SortField == "Wins" && ViewBag.SortOrder == "asc" ? "desc" : "asc")">
+                    Wins
+                </a>
+            </th>
             <th>Losses</th>
+            <th>
+                <a asp-action="Index" asp-route-sortField="WinRate" asp-route-sortOrder="@(ViewBag.SortField == "WinRate" && ViewBag.SortOrder == "asc" ? "desc" : "asc")">
+                    Win Rate (%)
+                </a>
+            </th>
             <th>Total Shots</th>
             <th>Hits</th>
-            <th>Hit Rate (%)</th>
+            <th>
+                <a asp-action="Index" asp-route-sortField="HitRate" asp-route-sortOrder="@(ViewBag.SortField == "HitRate" && ViewBag.SortOrder == "asc" ? "desc" : "asc")">
+                    Hit Rate (%)
+                </a>
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +54,7 @@
                 <td>@entry.Player</td>
                 <td>@entry.Wins</td>
                 <td>@entry.Losses</td>
+                <td>@entry.WinRate</td>
                 <td>@entry.TotalShots</td>
                 <td>@entry.Hits</td>
                 <td>@entry.HitRate</td>

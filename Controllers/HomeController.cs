@@ -10,11 +10,13 @@ namespace BattleShits.Controllers
         private readonly ILogger<HomeController> _logger;
         
         // Rasmus string
-        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        //private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
         
 
         //Micke string
         //private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BattleLocal;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
+
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Battleships;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -24,6 +26,7 @@ namespace BattleShits.Controllers
             public string Player { get; set; }
             public int Wins { get; set; }
             public int Losses { get; set; }
+            public decimal WinRate { get; set; }
             public int TotalShots { get; set; }
             public int Hits { get; set; }
             public decimal HitRate { get; set; }
@@ -46,7 +49,12 @@ namespace BattleShits.Controllers
                 CASE 
                     WHEN COUNT(s.Id) > 0 THEN CAST(SUM(CASE WHEN s.Hit = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(s.Id) AS DECIMAL(5, 2))
                     ELSE 0
-                END AS HitRate
+                END AS HitRate,
+                CASE 
+                    WHEN SUM(PlayerStats.Wins) + SUM(PlayerStats.Losses) > 0 
+                    THEN CAST(SUM(PlayerStats.Wins) * 100.0 / (SUM(PlayerStats.Wins) + SUM(PlayerStats.Losses)) AS DECIMAL(5, 2))
+                    ELSE 0
+                END AS WinRate
             FROM (
                 SELECT 
                     g.Winner AS Player,
@@ -78,7 +86,7 @@ namespace BattleShits.Controllers
             GROUP BY 
                 PlayerStats.Player
             ORDER BY 
-                Wins DESC, HitRate DESC;", connection);
+                Wins DESC, WinRate DESC;", connection);
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -89,6 +97,7 @@ namespace BattleShits.Controllers
                             Player = reader["Player"].ToString(),
                             Wins = Convert.ToInt32(reader["Wins"]),
                             Losses = Convert.ToInt32(reader["Losses"]),
+                            WinRate = Convert.ToDecimal(reader["WinRate"]),
                             TotalShots = Convert.ToInt32(reader["TotalShots"]),
                             Hits = Convert.ToInt32(reader["Hits"]),
                             HitRate = Convert.ToDecimal(reader["HitRate"])
@@ -100,9 +109,33 @@ namespace BattleShits.Controllers
             return leaderboard;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string sortField = "Wins", string sortOrder = "desc")
         {
             var leaderboard = GetLeaderboard();
+
+            // Sortera baserat på det valda fältet och ordningen
+            leaderboard = sortOrder.ToLower() switch
+            {
+                "asc" => sortField.ToLower() switch
+                {
+                    "wins" => leaderboard.OrderBy(x => x.Wins).ToList(),
+                    "hitrate" => leaderboard.OrderBy(x => x.HitRate).ToList(),
+                    "winrate" => leaderboard.OrderBy(x => x.WinRate).ToList(),
+                    _ => leaderboard.OrderBy(x => x.Wins).ToList()
+                },
+                "desc" => sortField.ToLower() switch
+                {
+                    "wins" => leaderboard.OrderByDescending(x => x.Wins).ToList(),
+                    "hitrate" => leaderboard.OrderByDescending(x => x.HitRate).ToList(),
+                    "winrate" => leaderboard.OrderByDescending(x => x.WinRate).ToList(),
+                    _ => leaderboard.OrderByDescending(x => x.Wins).ToList()
+                },
+                _ => leaderboard.OrderByDescending(x => x.Wins).ToList()
+            };
+
+            ViewBag.SortField = sortField;
+            ViewBag.SortOrder = sortOrder;
+
             return View(leaderboard);
         }
 

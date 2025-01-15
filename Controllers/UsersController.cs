@@ -78,7 +78,7 @@ namespace BattleShits.Controllers
                     return Redirect(ReturnUrl);
                 }
 
-                return RedirectToAction("test", "Users");
+                return RedirectToAction("index", "Home");
             }
 
             ViewBag.ErrorMessage = "Invalid username or password.";
