@@ -45,6 +45,7 @@ connection.on("UpdatePlayerList", function (players) {
     if (players.length == 2) {
         startShotCountCheck();
         startSimpleTimer();
+        
     }
 
 });
@@ -79,7 +80,8 @@ function startShotCountCheck() {
         if (connection.state === signalR.HubConnectionState.Connected) {
             console.log("Kontrollerar antalet skott...");
 
-                connection.invoke("CheckShotCountChange",gameId).catch(err => console.error("Fel vid kontroll av skottantal:", err));
+            connection.invoke("CheckShotCountChange", gameId).catch(err => console.error("Fel vid kontroll av skottantal:", err));
+            
         } else {
             console.warn("Anslutningen är inte redo.");
 
@@ -127,6 +129,8 @@ function declareWinner(winnerPlayer) {
 // Hanterar händelsen ShotCountChanged och uppdaterar shot count
 connection.on("ShotCountChanged", (newShotCount) => {
     console.log(`Antal skott uppdaterat: ${newShotCount}`);
+    //location.reload();
+    
 
     if (newShotCount !== previousShotCount) {
         console.log(`Skottantal ändrades! Föregående: ${previousShotCount}, Nytt: ${newShotCount}`);
