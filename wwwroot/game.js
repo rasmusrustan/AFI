@@ -50,7 +50,6 @@ connection.on("UpdatePlayerList", function (players) {
 });
 
 // Startar en enkel timer som räknar ner för båda spelares tur
-
 function startSimpleTimer() {
     if (turnTimer) {
         clearInterval(turnTimer);
@@ -107,6 +106,8 @@ function declareWinner(winnerPlayer) {
     }
 
     console.log(`Declaring winner player ${winnerPlayer} for game ${numericGameId}`);
+    const delay = winnerPlayer === 1 ? 0 : 1000;  // 0 ms för spelare 1, 500 ms för spelare 2
+
     connection.invoke("DeclareWinner", numericGameId, winnerPlayer)
         .then(() => {
             console.log(`Winner declared: Player ${winnerPlayer}`);
@@ -116,7 +117,10 @@ function declareWinner(winnerPlayer) {
             alert("Kunde inte deklarera vinnaren. Försök igen senare.");
         });
 
-    window.location.href = `/BattleField2/Result?gameId=${numericGameId}`
+    setTimeout(() => {
+        window.location.href = `/BattleField2/Result?gameId=${gameId}`;
+    }, delay);  // Fördröjer endast spelare 2
+
 
 }
 
@@ -135,6 +139,10 @@ connection.on("ShotCountChanged", (newShotCount) => {
         console.log("Inget skottantal förändrat.");
     }
 });
+connection.invoke("CheckShotCountChange", gameId)
+    .then(() => console.log("Shot count checked.")).catch(err => {
+
+    });
 
 function RedirectResult(gameId) {
     window.location.href = `/BattleField2/Result?gameId=${gameId}`

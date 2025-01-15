@@ -75,9 +75,28 @@ public class GameHub : Hub
     {
         await Clients.Group(gameId.ToString()).SendAsync("StartTimer", gameId);
     }
+    public async Task Shoot(int gameId, int x, int y)
+    {
+        // Inför skottet i databasen (som redan görs)
+        await Clients.Group(gameId.ToString()).SendAsync("ReceiveShot", gameId, x, y);
+        // Kontrollera om skottantalet har ändrats
+        int previousShotCount = database.GetCurrentRowCount();
+        int currentShotCount = database.GetPreviousRowCount();
+        // Om skottantalet har förändrats, skicka en uppdatering till alla spelare
+        if (currentShotCount != previousShotCount)
+        {
+            await Clients.Group(gameId.ToString()).SendAsync("ShotCountChanged", gameId, currentShotCount); // Uppdatera skottantalet till alla spelare
+        }
+        // Starta timer (eller hantera någon annan logik efter skott)
+        await StartTimer(gameId);
+    }
+    public async Task EndTurn(int gameId, int nextPlayerId)
+    {
+        // Meddela alla att det är nästa spelares tur
+        await Clients.Group(gameId.ToString()).SendAsync("NextTurn", gameId, nextPlayerId);
+    }
 
-    
- 
+
     private int previousRowCount = 0;
     private int noChangeCount = 0;  
     
@@ -99,15 +118,12 @@ public class GameHub : Hub
             {
                 noChangeCount++;
             }
-
-
         }
         else
         {
             await Clients.All.SendAsync("RedirectResult", gameId);
         }
-        
-
+ 
     }
 
 
@@ -116,13 +132,14 @@ public class GameHub : Hub
 
     public async Task DeclareWinner(int gameId, int winnerPlayerNumber)
     {
+
+
         if (gameId <= 0 || (winnerPlayerNumber != 1 && winnerPlayerNumber != 2))
         {
             Console.WriteLine($"Ogiltiga argument: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
             await Clients.Caller.SendAsync("Error", $"Ogiltiga argument för DeclareWinner: gameId={gameId}, winnerPlayerNumber={winnerPlayerNumber}");
             return;
         }
-
         try
         {
             int winner = database.getNextPlayer(gameId);
@@ -146,11 +163,8 @@ public class GameHub : Hub
             // Uppdaterar vinnaren i databasen
             database.declareWinner(gameId, winnerName);
 
-            // Skickar meddelande till alla klienter i rätt grupp att vinnaren är deklarerad
             await Clients.Group(gameId.ToString()).SendAsync("WinnerDeclared", gameId, winnerName);
             Console.WriteLine($"Vinnare deklarerad för gameId={gameId}: {winnerName}");
-
-            
 
         }
         catch (Exception ex)
