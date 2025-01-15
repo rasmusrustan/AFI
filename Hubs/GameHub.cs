@@ -76,32 +76,6 @@ public class GameHub : Hub
         await Clients.Group(gameId.ToString()).SendAsync("StartTimer", gameId);
     }
 
-    public async Task Shoot(int gameId, int x, int y)
-    {
-        // Inför skottet i databasen (som redan görs)
-        await Clients.Group(gameId.ToString()).SendAsync("ReceiveShot", gameId, x, y);
-
-        // Kontrollera om skottantalet har ändrats
-        int previousShotCount = database.GetCurrentRowCount();
-        int currentShotCount = database.GetPreviousRowCount();
-
-        // Om skottantalet har förändrats, skicka en uppdatering till alla spelare
-        if (currentShotCount != previousShotCount)
-        {
-            await Clients.Group(gameId.ToString()).SendAsync("ShotCountChanged", gameId, currentShotCount); // Uppdatera skottantalet till alla spelare
-        }
-
-        // Starta timer (eller hantera någon annan logik efter skott)
-        await StartTimer(gameId);
-    }
-
-
-
-    public async Task EndTurn(int gameId, int nextPlayerId)
-    {
-        // Meddela alla att det är nästa spelares tur
-        await Clients.Group(gameId.ToString()).SendAsync("NextTurn", gameId, nextPlayerId);
-    }
     
  
     private int previousRowCount = 0;
