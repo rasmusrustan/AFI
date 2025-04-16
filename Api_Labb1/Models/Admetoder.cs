@@ -2,34 +2,48 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Api_Labb1.Models
 {
     public class AdMetoder
     {
         private string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Annonser;Integrated Security=True;";
-
         /*-------------------------------CREATE-----------------------------------*/
         public int InsertAd(Ad ad, out string errormsg)
         {
             SqlConnection connection = new SqlConnection(connectionString);
-            string sql = @"INSERT INTO tbl_ads (ann_id, ad_rubrik, ad_innehall, ad_pris, ad_annonspris)
-                           VALUES (@annonsorID, @rubrik, @innehall, @pris, @annonspris)";
 
-            SqlCommand cmd = new SqlCommand(sql, connection);
-
-            cmd.Parameters.Add("@annonsorID", SqlDbType.Int).Value = ad.AnnonsorID;
-            cmd.Parameters.Add("@rubrik", SqlDbType.VarChar, 255).Value = ad.Rubrik;
-            cmd.Parameters.Add("@innehall", SqlDbType.Text).Value = ad.Innehall;
-            cmd.Parameters.Add("@pris", SqlDbType.Decimal).Value = ad.Pris;
-            cmd.Parameters.Add("@annonspris", SqlDbType.Decimal).Value = ad.AnnonsPris;
+            // Först kontrollera att AnnonsorID existerar
+            string checkAnnonsorSql = "SELECT COUNT(*) FROM tbl_annonsorer WHERE ann_id = @annonsorID";
+            SqlCommand checkAnnonsorCmd = new SqlCommand(checkAnnonsorSql, connection);
+            checkAnnonsorCmd.Parameters.Add("@annonsorID", SqlDbType.Int).Value = ad.AnnonsorID;
 
             try
             {
                 connection.Open();
-                int i = cmd.ExecuteNonQuery();
-                errormsg = i > 0 ? "" : "Insert failed";
-                return i;
+                int count = Convert.ToInt32(checkAnnonsorCmd.ExecuteScalar());
+
+                if (count == 0)
+                {
+                    errormsg = "Annonsör ID finns inte i databasen.";
+                    return 0; 
+                }
+
+                string sql = @"INSERT INTO tbl_ads (ann_id, ad_rubrik, ad_innehall, ad_pris, ad_annonspris)
+                       VALUES (@annonsorID, @rubrik, @innehall, @pris, @annonspris)";
+
+                SqlCommand cmd = new SqlCommand(sql, connection);
+                cmd.Parameters.Add("@annonsorID", SqlDbType.Int).Value = ad.AnnonsorID;
+                cmd.Parameters.Add("@rubrik", SqlDbType.VarChar, 255).Value = ad.Rubrik;
+                cmd.Parameters.Add("@innehall", SqlDbType.Text).Value = ad.Innehall;
+                cmd.Parameters.Add("@pris", SqlDbType.Decimal).Value = ad.Pris;
+                cmd.Parameters.Add("@annonspris", SqlDbType.Decimal).Value = ad.AnnonsPris;
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+                errormsg = rowsAffected > 0 ? "" : "Insert failed";
+                return rowsAffected > 0 ? 1 : 0;
             }
             catch (Exception ex)
             {
@@ -41,6 +55,7 @@ namespace Api_Labb1.Models
                 connection.Close();
             }
         }
+
 
         /*-------------------------------READ--------------------------------*/
         public List<Ad> GetAllAds(out string errormsg)
